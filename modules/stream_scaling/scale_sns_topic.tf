@@ -1,5 +1,5 @@
 locals {
-  kinesis_scaling_sns_topic_name = "kinesis-scaling-topic"
+  kinesis_scaling_sns_topic_name = "kinesis-scaling-topic-${var.stream_name}"
 }
 
 resource "aws_sns_topic" "kinesis_scaling_sns_topic" {

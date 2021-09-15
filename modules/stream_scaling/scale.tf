@@ -1,8 +1,5 @@
-# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-# SPDX-License-Identifier: MIT-0
-
 locals {
-  kinesis_scaling_function_name          = "kinesis-scaling-${var.stream_name}"  //TODO
+  kinesis_scaling_function_name          = "kinesis-${var.stream_name}-scale-helper"
   kinesis_period_mins                    = var.kinesis_period_mins
   kinesis_period_secs                    = 60 * local.kinesis_period_mins
   kinesis_scale_up_threshold             = var.kinesis_scale_up_threshold

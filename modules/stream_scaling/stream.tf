@@ -11,7 +11,7 @@ resource "aws_kinesis_stream" "autoscaling_kinesis_stream" {
 
 
   shard_level_metrics = [
-    "IncomingBytes",
+    "IncomingBytes","IncomingRecords",
   ]
 
   lifecycle {

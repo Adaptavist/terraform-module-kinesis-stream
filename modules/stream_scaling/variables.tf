@@ -11,7 +11,7 @@ variable "stream_name" {
 
 variable "encryption_type" {
   type        = string
-  description = "Encryption Key"
+  description = "Encryption Type"
   default     = "KMS"
 }
 

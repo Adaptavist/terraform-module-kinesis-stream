@@ -1,8 +1,5 @@
-# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-# SPDX-License-Identifier: MIT-0
 
 locals {
-  kinesis_scaling_lambda_role_name   = "${local.kinesis_scaling_function_name}-role"
   kinesis_scaling_lambda_policy_name = "${local.kinesis_scaling_function_name}-policy"
 }
 
@@ -42,7 +39,7 @@ data "aws_iam_policy_document" "kinesis_scaling_lambda_policy_document" {
   statement {
     sid       = "AllowReadFromKinesis"
     effect    = "Allow"
-    resources = ["arn:aws:kinesis:${local.region}:${local.account_id}:stream/*"]
+    resources = ["arn:aws:kinesis:${local.region}:${local.account_id}:stream/${aws_kinesis_stream.autoscaling_kinesis_stream.name}"]
 
     actions = [
       "kinesis:DescribeStreamSummary",
@@ -55,7 +52,7 @@ data "aws_iam_policy_document" "kinesis_scaling_lambda_policy_document" {
   statement {
     sid       = "AllowPublishToSNS"
     effect    = "Allow"
-    resources = ["arn:aws:sns:${local.region}:${local.account_id}:*"]
+    resources = ["arn:aws:sns:${local.region}:${local.account_id}:${aws_sns_topic.kinesis_scaling_sns_topic.name}"]
 
     actions = [
       "sns:Publish",
@@ -65,7 +62,7 @@ data "aws_iam_policy_document" "kinesis_scaling_lambda_policy_document" {
   statement {
     sid       = "AllowChangeFunctionConcurrencyForLambda"
     effect    = "Allow"
-    resources = ["arn:aws:lambda:${local.region}:${local.account_id}:function:*"]
+    resources = ["arn:aws:lambda:${local.region}:${local.account_id}:function:${module.scaling_kinesis_lambda.lambda_name}"]
 
     actions = [
       "lambda:PutFunctionConcurrency",
@@ -85,6 +82,6 @@ resource "aws_iam_policy" "kinesis_scaling_lambda_policy" {
 # Attach Lambda Policy to Role
 ##################################
 resource "aws_iam_role_policy_attachment" "attach_kinesis_scaling_lambda_policy" {
-  role       = module.scaling_kinesis.lambda_role_name
+  role       = module.scaling_kinesis_lambda.lambda_role_name
   policy_arn = aws_iam_policy.kinesis_scaling_lambda_policy.arn
 }

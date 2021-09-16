@@ -1,5 +1,5 @@
 locals {
-  kinesis_scaling_function_name          = "kinesis-${var.stream_name}-scale-helper"
+  kinesis_scaling_function_name          = "${var.stream_name}-kinesis-scale-helper"
   kinesis_period_mins                    = var.kinesis_period_mins
   kinesis_period_secs                    = 60 * local.kinesis_period_mins
   kinesis_scale_up_threshold             = var.kinesis_scale_up_threshold
@@ -25,14 +25,14 @@ locals {
   # > "stateReason": "Threshold Crossed: 5 out of the last 5 datapoints [0.9162957064310709 (23/06/20 12:42:00), 0.934598798751831 (23/06/20 12:37:00...
   # As you can see these datapoints are not aligned along the 5 minute display boundary (12:05, 12:10) but rather 12:37, 12:42.
 
-  kinesis_consumer_lambda_name       = "$kinesis-consumer-lambda"
+  #kinesis_consumer_lambda_name       = "$kinesis-consumer-lambda"
   kinesis_consumer_lambda_arn        = "arn:aws:lambda:${local.region}:${local.account_id}:function:${local.kinesis_scaling_function_name}"
   kinesis_consumer_lambdas_per_shard = 5 # Note: Max is 10, you can max it out if a stream can't catch up.
   # Remove the kinesis_consumer_lambda ignore block for reserved_concurrent_executions if you change
   # this value or it won't apply when you deploy.
 }
 
-module "scaling_kinesis" {
+module "scaling_kinesis_lambda" {
   source                             = "Adaptavist/aws-lambda/module"
   version                            = "1.10.2"
   name                               = local.kinesis_scaling_function_name
@@ -70,12 +70,12 @@ module "scaling_kinesis" {
 }
 
 resource "aws_lambda_function_event_invoke_config" "kinesis_scaling_function_async_config" {
-  function_name          = module.scaling_kinesis.lambda_name
+  function_name          = module.scaling_kinesis_lambda.lambda_name
   maximum_retry_attempts = 0 # We do not want any retries of the scaling function if it errors out, alarms will re-trigger it
 }
 
 resource "aws_cloudwatch_metric_alarm" "kinesis_scaling_fatal_errors" {
-  alarm_name                = "${module.scaling_kinesis.lambda_name}-fatal-errors"
+  alarm_name                = "${module.scaling_kinesis_lambda.lambda_name}-fatal-errors"
   comparison_operator       = "GreaterThanThreshold"
   evaluation_periods        = "1"
   metric_name               = local.kinesis_fatal_error_metric_name

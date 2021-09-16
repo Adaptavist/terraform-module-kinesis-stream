@@ -1,4 +1,3 @@
-
 ################################
 # Kinesis Data Stream
 ################################
@@ -8,8 +7,7 @@ resource "aws_kinesis_stream" "autoscaling_kinesis_stream" {
   retention_period = var.stream_retention_period
   encryption_type  = var.encryption_type
   kms_key_id       = var.kms_key_id
-
-  tags = var.tags
+  tags             = var.tags
 
 
   shard_level_metrics = [
@@ -27,7 +25,7 @@ resource "aws_kinesis_stream" "autoscaling_kinesis_stream" {
 # Kinesis Data Stream Scaling Alarms
 ######################################################
 resource "aws_cloudwatch_metric_alarm" "kinesis_scale_up" {
-  alarm_name                = "${aws_kinesis_stream.autoscaling_kinesis_stream.name}-scale-up"
+  alarm_name                = "${var.stream_name}-scale-up"
   comparison_operator       = "GreaterThanOrEqualToThreshold"
   evaluation_periods        = local.kinesis_scale_up_evaluation_period   # Defined in scale.tf
   datapoints_to_alarm       = local.kinesis_scale_up_datapoints_required # Defined in scale.tf
@@ -108,7 +106,7 @@ resource "aws_cloudwatch_metric_alarm" "kinesis_scale_up" {
   }
 
   depends_on = [
-    module.scaling_kinesis # The lambda function needs to be updated before the alarms. A scenario where
+    module.scaling_kinesis_lambda # The lambda function needs to be updated before the alarms. A scenario where
     # this matters is changing the scaling thresholds which are baked into the scaling
     # lambda environment variables. If the alarms are updated first it could trigger
     # the scaling lambda before terraform gives the lambda the new thresholds, resulting
@@ -117,7 +115,7 @@ resource "aws_cloudwatch_metric_alarm" "kinesis_scale_up" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "kinesis_scale_down" {
-  alarm_name                = "${aws_kinesis_stream.autoscaling_kinesis_stream.name}-scale-down"
+  alarm_name                = "${var.stream_name}-scale-down"
   comparison_operator       = "LessThanThreshold"
   evaluation_periods        = local.kinesis_scale_down_evaluation_period                                                               # Defined in scale.tf
   datapoints_to_alarm       = local.kinesis_scale_down_datapoints_required                                                             # Defined in scale.tf
@@ -224,7 +222,7 @@ resource "aws_cloudwatch_metric_alarm" "kinesis_scale_down" {
   }
 
   depends_on = [
-    module.scaling_kinesis # The lambda function needs to be updated before the alarms. A scenario where
+    module.scaling_kinesis_lambda # The lambda function needs to be updated before the alarms. A scenario where
     # this matters is changing the scaling thresholds which are baked into the scaling
     # lambda environment variables. If the alarms are updated first it could trigger
     # the scaling lambda before terraform gives the lambda the new thresholds, resulting

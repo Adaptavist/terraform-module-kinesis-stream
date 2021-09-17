@@ -33,6 +33,7 @@ resource "aws_cloudwatch_metric_alarm" "kinesis_scale_up" {
   alarm_description         = "Stream throughput has gone above the scale up threshold"
   insufficient_data_actions = []
   alarm_actions             = [aws_sns_topic.kinesis_scaling_sns_topic.arn]
+  tags                      = var.tags
 
   metric_query {
     id         = "s1"
@@ -123,6 +124,7 @@ resource "aws_cloudwatch_metric_alarm" "kinesis_scale_down" {
   alarm_description         = "Stream throughput has gone below the scale down threshold"
   insufficient_data_actions = []
   alarm_actions             = [aws_sns_topic.kinesis_scaling_sns_topic.arn]
+  tags                      = var.tags
 
   metric_query {
     id         = "s1"

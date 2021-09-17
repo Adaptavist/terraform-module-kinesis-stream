@@ -76,6 +76,7 @@ resource "aws_iam_policy" "kinesis_scaling_lambda_policy" {
   path        = "/"
   description = "Policy for Central Logging Kinesis Auto-Scaling Lambda"
   policy      = data.aws_iam_policy_document.kinesis_scaling_lambda_policy_document.json
+  tags        = var.tags
 }
 
 ##################################

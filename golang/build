@@ -1,4 +1,3 @@
 GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o main scale.go
-rm -f kinesis_scaling.zip
-zip kinesis_scaling.zip main
-rm main
+
+# move the main file to module path (lambda/kinesis_scaling)

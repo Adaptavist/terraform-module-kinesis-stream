@@ -23,5 +23,5 @@ pipelines:
     - step: { name: 'Checkov analysis', script: [ *checkov ], image: *checkov-image, services: [ docker ] }
 
   branches:
-    master:
+    main:
       - step: *release

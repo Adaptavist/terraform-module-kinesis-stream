@@ -11,7 +11,7 @@ resource "aws_kinesis_stream" "autoscaling_kinesis_stream" {
 
 
   shard_level_metrics = [
-    "IncomingBytes","IncomingRecords",
+    "IncomingBytes", "IncomingRecords",
   ]
 
   lifecycle {
@@ -32,7 +32,7 @@ resource "aws_cloudwatch_metric_alarm" "kinesis_scale_up" {
   threshold                 = local.kinesis_scale_up_threshold           # Defined in scale.tf
   alarm_description         = "Stream throughput has gone above the scale up threshold"
   insufficient_data_actions = []
-  alarm_actions             = [aws_sns_topic.kinesis_scaling_sns_topic.arn]
+  alarm_actions             = var.enable_autoscaling ? [aws_sns_topic.kinesis_scaling_sns_topic.arn] : compact(module.notify_slack.*.this_slack_topic_arn)
   tags                      = var.tags
 
   metric_query {
@@ -118,12 +118,12 @@ resource "aws_cloudwatch_metric_alarm" "kinesis_scale_up" {
 resource "aws_cloudwatch_metric_alarm" "kinesis_scale_down" {
   alarm_name                = "${var.stream_name}-scale-down"
   comparison_operator       = "LessThanThreshold"
-  evaluation_periods        = local.kinesis_scale_down_evaluation_period                                                               # Defined in scale.tf
-  datapoints_to_alarm       = local.kinesis_scale_down_datapoints_required                                                             # Defined in scale.tf
-  threshold                 = aws_kinesis_stream.autoscaling_kinesis_stream.shard_count == 1 ? -1 : local.kinesis_scale_down_threshold # Defined in scale.tf
+  evaluation_periods        = local.kinesis_scale_down_evaluation_period                                                                                 # Defined in scale.tf
+  datapoints_to_alarm       = local.kinesis_scale_down_datapoints_required                                                                               # Defined in scale.tf
+  threshold                 = aws_kinesis_stream.autoscaling_kinesis_stream.shard_count == var.min_shard_count ? -1 : local.kinesis_scale_down_threshold # Defined in scale.tf
   alarm_description         = "Stream throughput has gone below the scale down threshold"
   insufficient_data_actions = []
-  alarm_actions             = [aws_sns_topic.kinesis_scaling_sns_topic.arn]
+  alarm_actions             = var.enable_autoscaling ? [aws_sns_topic.kinesis_scaling_sns_topic.arn] : compact(module.notify_slack.*.this_slack_topic_arn)
   tags                      = var.tags
 
   metric_query {

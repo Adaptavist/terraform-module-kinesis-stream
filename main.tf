@@ -5,6 +5,7 @@ module "kinesis_scaling" {
 
   stream_name                            = var.stream_name
   shard_count                            = var.shard_count
+  min_shard_count                        = var.min_shard_count
   stream_retention_period                = var.stream_retention_period
   encryption_type                        = var.encryption_type
   kms_key_id                             = var.kms_key_id
@@ -17,4 +18,6 @@ module "kinesis_scaling" {
   kinesis_scale_up_datapoints_required   = var.kinesis_scale_up_datapoints_required
   kinesis_scale_up_evaluation_period     = var.kinesis_scale_up_evaluation_period
   kinesis_scale_up_threshold             = var.kinesis_scale_up_threshold
+  slack_channel_name                     = var.slack_channel_name
+  enable_autoscaling                     = var.enable_autoscaling
 }

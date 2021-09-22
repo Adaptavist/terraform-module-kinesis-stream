@@ -26,6 +26,12 @@ variable "shard_count" {
   description = "Number of Shards"
 }
 
+variable "min_shard_count" {
+  default     = 1
+  type        = number
+  description = "Minimum Number of Shards"
+}
+
 variable "stream_retention_period" {
   default     = 24
   type        = number
@@ -79,4 +85,15 @@ variable "kinesis_scale_down_min_iter_age_mins" {
   default     = 30
   type        = number
   description = "To compare with streams max iterator age. If the streams max iterator age is above this, then the stream will not scale down"
+}
+
+variable "slack_channel_name" {
+  default = ""
+  type    = string
+}
+
+variable "enable_autoscaling" {
+  type        = bool
+  default     = true
+  description = "Enable autoscaling"
 }

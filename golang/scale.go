@@ -84,7 +84,7 @@ func handleRequest(_ context.Context, snsEvent events.SNSEvent) {
 	var evaluationPeriodScaleUp, evaluationPeriodScaleDown int64
 	var datapointsRequiredScaleUp, datapointsRequiredScaleDown int64
 	var upThreshold, downThreshold float64
-	var scaleDownMinIterAgeMins int64
+	var scaleDownMinIterAgeMins, scaleDownMinCount int64
 	var dryRun = true
 	// Note: Investigate envconfig (https://github.com/kelseyhightower/envconfig) to simplify this environment variable section to have less boilerplate.
 	periodMins, err := strconv.ParseInt(os.Getenv("SCALE_PERIOD_MINS"), 10, 64)
@@ -132,6 +132,15 @@ func handleRequest(_ context.Context, snsEvent events.SNSEvent) {
 		// If the streams max iterator age is above this, then the stream will not scale down (we need all the shards/lambdas to clear the backlog, only scale down when it's cleared)
 		scaleDownMinIterAgeMins = 30
 		logMessage := "Error reading the SCALE_DOWN_MIN_ITER_AGE_MINS environment variable. Stream will default to 30 minutes."
+		logger.WithError(err).Error(logMessage)
+		errorHandler(err, logMessage, "", false)
+	}
+
+	scaleDownMinCount, err = strconv.ParseInt(os.Getenv("SCALE_DOWN_MIN_COUNT"), 10, 64)
+	if err != nil {
+		// If the streams max iterator age is above this, then the stream will not scale down (we need all the shards/lambdas to clear the backlog, only scale down when it's cleared)
+		scaleDownMinCount = 1
+		logMessage := "Error reading the SCALE_DOWN_MIN_COUNT environment variable. Stream min count will default to 1."
 		logger.WithError(err).Error(logMessage)
 		errorHandler(err, logMessage, "", false)
 	}
@@ -261,7 +270,7 @@ func handleRequest(_ context.Context, snsEvent events.SNSEvent) {
 		return
 	}
 	currentShardCount = *((*streamSummary.StreamDescriptionSummary).OpenShardCount)
-	newShardCount, downThreshold = calculateNewShardCount(currentAlarmAction, downThreshold, currentShardCount)
+	newShardCount, downThreshold = calculateNewShardCount(currentAlarmAction, downThreshold, currentShardCount,scaleDownMinCount)
 	logger = logger.WithField("CurrentShardCount", currentShardCount).WithField("TargetShardCount", newShardCount)
 	if dryRun {
 		logger.Info("This is dry run. Will not scale the stream.")
@@ -582,7 +591,7 @@ func setAlarmState(alarmName string, state string, reason string) (*cloudwatch.S
 // scaleAction: The scaling action. Possible values are Up and Down
 // downThreshold: The current scaling down threshold. This will be set to -1.0 if the new shard count turns out to be 1
 // currentShardCount: The current open shards in the Kinesis stream
-func calculateNewShardCount(scaleAction string, downThreshold float64, currentShardCount int64) (int64, float64) {
+func calculateNewShardCount(scaleAction string, downThreshold float64, currentShardCount int64,minimumShardCount int64) (int64, float64) {
 	var targetShardCount int64
 	if scaleAction == "Up" {
 		targetShardCount = currentShardCount * 2
@@ -591,8 +600,8 @@ func calculateNewShardCount(scaleAction string, downThreshold float64, currentSh
 	if scaleAction == "Down" {
 		targetShardCount = currentShardCount / 2
 		// Set to minimum shard count
-		if targetShardCount <= 1 {
-			targetShardCount = 1
+		if targetShardCount <= minimumShardCount {
+			targetShardCount = minimumShardCount
 			// At minimum shard count,set the scale down threshold to -1, so that scale down alarm remains in OK state
 			downThreshold = -1.0
 		}

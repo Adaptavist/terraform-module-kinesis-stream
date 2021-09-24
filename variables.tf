@@ -94,6 +94,6 @@ variable "slack_channel_name" {
 
 variable "enable_autoscaling" {
   type        = bool
-  default     = true
+  default     = false
   description = "Enable autoscaling"
 }

@@ -21,7 +21,7 @@ variable "tags" {
 }
 
 variable "shard_count" {
-  default     = 1
+  default     = 2
   type        = number
   description = "Number of Shards"
 }
@@ -52,13 +52,13 @@ variable "kinesis_scale_up_threshold" {
 
 
 variable "kinesis_scale_up_evaluation_period" {
-  default     = 25
+  default     = 5
   type        = number
   description = "Period after which the data for the alarm will be evaluated to scale up"
 }
 
 variable "kinesis_scale_up_datapoints_required" {
-  default     = 25
+  default     = 5
   type        = number
   description = "Number of datapoints required in the evaluationPeriod to trigger the alarm to scale up"
 }
@@ -70,13 +70,13 @@ variable "kinesis_scale_down_threshold" {
 }
 
 variable "kinesis_scale_down_evaluation_period" {
-  default     = 300
+  default     = 60
   type        = number
   description = "Period after which the data for the alarm will be evaluated to scale down"
 }
 
 variable "kinesis_scale_down_datapoints_required" {
-  default     = 285
+  default     = 57
   type        = number
   description = "Number of datapoints required in the evaluationPeriod to trigger the alarm to scale down"
 }
@@ -88,7 +88,7 @@ variable "kinesis_scale_down_min_iter_age_mins" {
 }
 
 variable "slack_channel_name" {
-  default = ""
+  default = "proj-data-highway-notifications"
   type    = string
 }
 

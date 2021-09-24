@@ -32,7 +32,7 @@ resource "aws_cloudwatch_metric_alarm" "kinesis_scale_up" {
   threshold                 = local.kinesis_scale_up_threshold           # Defined in scale.tf
   alarm_description         = "Stream throughput has gone above the scale up threshold"
   insufficient_data_actions = []
-  alarm_actions             = var.enable_autoscaling ? [aws_sns_topic.kinesis_scaling_sns_topic.arn] : compact(module.notify_slack.*.this_slack_topic_arn)
+  alarm_actions             = var.enable_autoscaling ? [aws_sns_topic.kinesis_scaling_sns_topic.arn, module.avst_notify_slack.alarms_topic_arn] : [module.avst_notify_slack.alarms_topic_arn]
   tags                      = var.tags
 
   metric_query {
@@ -123,8 +123,8 @@ resource "aws_cloudwatch_metric_alarm" "kinesis_scale_down" {
   threshold                 = aws_kinesis_stream.autoscaling_kinesis_stream.shard_count == var.min_shard_count ? -1 : local.kinesis_scale_down_threshold # Defined in scale.tf
   alarm_description         = "Stream throughput has gone below the scale down threshold"
   insufficient_data_actions = []
-  alarm_actions             = var.enable_autoscaling ? [aws_sns_topic.kinesis_scaling_sns_topic.arn] : compact(module.notify_slack.*.this_slack_topic_arn)
-  tags                      = var.tags
+  alarm_actions             = var.enable_autoscaling ? [aws_sns_topic.kinesis_scaling_sns_topic.arn, module.avst_notify_slack.alarms_topic_arn] : [module.avst_notify_slack.alarms_topic_arn]
+    tags                    = var.tags
 
   metric_query {
     id         = "s1"

@@ -1,3 +1,1 @@
-GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o main scale.go
-
-# move the main file to module path (lambda/kinesis_scaling)
+GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ../modules/stream_scaling/lambda/kinesis_scaling/main scale.go

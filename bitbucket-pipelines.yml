@@ -6,6 +6,8 @@ definitions:
     entrypoint:
       - '/usr/bin/env'
       - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+  go-lang: &go-lang
+    name: golang:1
 
   release: &release
     name: release
@@ -18,9 +20,15 @@ definitions:
       checkov --quiet --compact -s -d . -o github_failed_only > compliance-issues.md &&
       checkov --quiet --compact -s -d .
 
+      # lambda
+    - &kinesis-scaling export LAMBDA=golang
+      # go build
+    - &lambda-build (cd ${LAMBDA}/ && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ../modules/stream_scaling/lambda/kinesis_scaling/main scale.go)
+
 pipelines:
   default:
     - step: { name: 'Checkov analysis', script: [ *checkov ], image: *checkov-image, services: [ docker ] }
+    - step: { name: 'kinesis-scaling build lambda',         image: *go-lang, script: [ *kinesis-scaling, *lambda-build ], artifacts: ['/modules/stream_scaling/lambda/kinesis_scaling/main'] }
 
   branches:
     main:

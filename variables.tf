@@ -26,9 +26,8 @@ variable "shard_count" {
 }
 
 variable "min_shard_count" {
-  default     = 1
   type        = number
-  description = "Minimum Number of Shards"
+  description = "Minimum Number of Shards greater than zero"
 }
 
 variable "stream_retention_period" {

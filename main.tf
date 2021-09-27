@@ -1,7 +1,25 @@
 # Terraform configuration
 
+module "kinesis_no_scaling" {
+  source = "./modules/stream_simple"
+
+  count = var.enable_autoscaling == false ? 1 : 0
+
+  stream_name               = var.stream_name
+  shard_count               = var.shard_count
+  stream_retention_period   = var.stream_retention_period
+  encryption_type           = var.encryption_type
+  kms_key_id                = var.kms_key_id
+  enable_slack_notification = var.enable_slack_notification
+  region                    = data.aws_region.current.name
+  tags                      = var.tags
+  slack_webhook_url         = data.aws_ssm_parameter.slack_webhook.value
+}
+
 module "kinesis_scaling" {
   source = "./modules/stream_scaling"
+
+  count = var.enable_autoscaling ? 1 : 0
 
   stream_name                            = var.stream_name
   shard_count                            = var.shard_count
@@ -18,6 +36,9 @@ module "kinesis_scaling" {
   kinesis_scale_up_datapoints_required   = var.kinesis_scale_up_datapoints_required
   kinesis_scale_up_evaluation_period     = var.kinesis_scale_up_evaluation_period
   kinesis_scale_up_threshold             = var.kinesis_scale_up_threshold
-  slack_channel_name                     = var.slack_channel_name
   enable_autoscaling                     = var.enable_autoscaling
+  enable_slack_notification              = var.enable_slack_notification
+  account_id                             = data.aws_caller_identity.current.account_id
+  region                                 = data.aws_region.current.name
+  slack_webhook_url                      = data.aws_ssm_parameter.slack_webhook.value
 }

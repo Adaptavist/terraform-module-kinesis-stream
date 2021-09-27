@@ -9,7 +9,6 @@ resource "aws_kinesis_stream" "autoscaling_kinesis_stream" {
   kms_key_id       = var.kms_key_id
   tags             = var.tags
 
-
   shard_level_metrics = [
     "IncomingBytes", "IncomingRecords",
   ]
@@ -32,13 +31,13 @@ resource "aws_cloudwatch_metric_alarm" "kinesis_scale_up" {
   threshold                 = local.kinesis_scale_up_threshold           # Defined in scale.tf
   alarm_description         = "Stream throughput has gone above the scale up threshold"
   insufficient_data_actions = []
-  alarm_actions             = var.enable_autoscaling ? [aws_sns_topic.kinesis_scaling_sns_topic.arn, module.avst_notify_slack.alarms_topic_arn] : [module.avst_notify_slack.alarms_topic_arn]
+  alarm_actions             = var.enable_autoscaling ? [aws_sns_topic.kinesis_scaling_sns_topic.arn, local.slack_notification_arn] : [local.slack_notification_arn]
   tags                      = var.tags
 
   metric_query {
     id         = "s1"
     label      = "ShardCount"
-    expression = aws_kinesis_stream.autoscaling_kinesis_stream.shard_count
+    expression = var.shard_count
   }
 
   metric_query {
@@ -50,7 +49,7 @@ resource "aws_cloudwatch_metric_alarm" "kinesis_scale_up" {
       period      = local.kinesis_period_secs
       stat        = "Sum"
       dimensions = {
-        StreamName = aws_kinesis_stream.autoscaling_kinesis_stream.name
+        StreamName = var.stream_name
       }
     }
   }
@@ -64,7 +63,7 @@ resource "aws_cloudwatch_metric_alarm" "kinesis_scale_up" {
       period      = local.kinesis_period_secs
       stat        = "Sum"
       dimensions = {
-        StreamName = aws_kinesis_stream.autoscaling_kinesis_stream.name
+        StreamName = var.stream_name
       }
     }
   }
@@ -118,18 +117,18 @@ resource "aws_cloudwatch_metric_alarm" "kinesis_scale_up" {
 resource "aws_cloudwatch_metric_alarm" "kinesis_scale_down" {
   alarm_name                = "${var.stream_name}-scale-down"
   comparison_operator       = "LessThanThreshold"
-  evaluation_periods        = local.kinesis_scale_down_evaluation_period                                                                                 # Defined in scale.tf
-  datapoints_to_alarm       = local.kinesis_scale_down_datapoints_required                                                                               # Defined in scale.tf
-  threshold                 = aws_kinesis_stream.autoscaling_kinesis_stream.shard_count == var.min_shard_count ? -1 : local.kinesis_scale_down_threshold # Defined in scale.tf
+  evaluation_periods        = local.kinesis_scale_down_evaluation_period                                       # Defined in scale.tf
+  datapoints_to_alarm       = local.kinesis_scale_down_datapoints_required                                     # Defined in scale.tf
+  threshold                 = var.shard_count == var.min_shard_count ? -1 : local.kinesis_scale_down_threshold # Defined in scale.tf
   alarm_description         = "Stream throughput has gone below the scale down threshold"
   insufficient_data_actions = []
-  alarm_actions             = var.enable_autoscaling ? [aws_sns_topic.kinesis_scaling_sns_topic.arn, module.avst_notify_slack.alarms_topic_arn] : [module.avst_notify_slack.alarms_topic_arn]
-    tags                    = var.tags
+  alarm_actions             = var.enable_autoscaling ? [aws_sns_topic.kinesis_scaling_sns_topic.arn, local.slack_notification_arn] : [local.slack_notification_arn]
+  tags                      = var.tags
 
   metric_query {
     id         = "s1"
     label      = "ShardCount"
-    expression = aws_kinesis_stream.autoscaling_kinesis_stream.shard_count
+    expression = var.shard_count
   }
 
   metric_query {
@@ -147,7 +146,7 @@ resource "aws_cloudwatch_metric_alarm" "kinesis_scale_down" {
       period      = local.kinesis_period_secs
       stat        = "Sum"
       dimensions = {
-        StreamName = aws_kinesis_stream.autoscaling_kinesis_stream.name
+        StreamName = var.stream_name
       }
     }
   }
@@ -161,7 +160,7 @@ resource "aws_cloudwatch_metric_alarm" "kinesis_scale_down" {
       period      = local.kinesis_period_secs
       stat        = "Sum"
       dimensions = {
-        StreamName = aws_kinesis_stream.autoscaling_kinesis_stream.name
+        StreamName = var.stream_name
       }
     }
   }
@@ -175,7 +174,7 @@ resource "aws_cloudwatch_metric_alarm" "kinesis_scale_down" {
       period      = local.kinesis_period_secs
       stat        = "Maximum"
       dimensions = {
-        StreamName = aws_kinesis_stream.autoscaling_kinesis_stream.name
+        StreamName = var.stream_name
       }
     }
   }

@@ -39,7 +39,7 @@ data "aws_iam_policy_document" "kinesis_scaling_lambda_policy_document" {
   statement {
     sid       = "AllowReadFromKinesis"
     effect    = "Allow"
-    resources = ["arn:aws:kinesis:${local.region}:${local.account_id}:stream/${aws_kinesis_stream.autoscaling_kinesis_stream.name}"]
+    resources = ["arn:aws:kinesis:${var.region}:${var.account_id}:stream/${aws_kinesis_stream.autoscaling_kinesis_stream.name}"]
 
     actions = [
       "kinesis:DescribeStreamSummary",
@@ -52,7 +52,7 @@ data "aws_iam_policy_document" "kinesis_scaling_lambda_policy_document" {
   statement {
     sid       = "AllowPublishToSNS"
     effect    = "Allow"
-    resources = ["arn:aws:sns:${local.region}:${local.account_id}:${aws_sns_topic.kinesis_scaling_sns_topic.name}"]
+    resources = ["arn:aws:sns:${var.region}:${var.account_id}:${aws_sns_topic.kinesis_scaling_sns_topic.name}"]
 
     actions = [
       "sns:Publish",
@@ -62,7 +62,7 @@ data "aws_iam_policy_document" "kinesis_scaling_lambda_policy_document" {
   statement {
     sid       = "AllowChangeFunctionConcurrencyForLambda"
     effect    = "Allow"
-    resources = ["arn:aws:lambda:${local.region}:${local.account_id}:function:${module.scaling_kinesis_lambda.lambda_name}"]
+    resources = ["arn:aws:lambda:${var.region}:${var.account_id}:function:${module.scaling_kinesis_lambda.lambda_name}"]
 
     actions = [
       "lambda:PutFunctionConcurrency",

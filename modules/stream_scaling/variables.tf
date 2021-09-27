@@ -1,7 +1,11 @@
+variable "account_id" {
+  type        = string
+  description = "Account Id"
+}
 
-locals {
-  account_id = data.aws_caller_identity.current.account_id
-  region     = data.aws_region.current.name
+variable "region" {
+  type        = string
+  description = "AWS Region"
 }
 
 variable "stream_name" {
@@ -85,6 +89,13 @@ variable "enable_autoscaling" {
   description = "Enable autoscaling"
 }
 
-variable "slack_channel_name" {
-  type = string
+variable "enable_slack_notification" {
+  type        = bool
+  description = "Enable Scale Notification"
 }
+
+variable "slack_webhook_url" {
+  type        = string
+  description = "Slack Webhook URL"
+}
+

@@ -1,3 +1,10 @@
+## [1.1.1](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.1.0...v1.1.1) (2021-09-27)
+
+
+### Bug Fixes
+
+* Updated the changelog.md to reflect right features and fixes ([91b2c42](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/91b2c42f1118a9afae88318152e1f76749fc040f))
+
 # [1.1.0](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.0.1...v1.1.0) (2021-09-27)
 
 

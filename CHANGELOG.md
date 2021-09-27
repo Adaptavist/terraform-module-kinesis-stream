@@ -10,7 +10,7 @@
 ### Features
 
 *  Accept additional alarm actions in lambda function to update the alarm metric accordingly ([00e9c53](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/00e9c536006f849c5347578f285ed03ae99e3586))
-*  The implementation of the minimum shard for scale down. ([54fba2b](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/54fba2b7b3632ed06e82b5ec2ee5d7fe65622a04))
+*  The implementation of the minimum shard count for scale down. ([54fba2b](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/54fba2b7b3632ed06e82b5ec2ee5d7fe65622a04))
 
 ## [1.0.1](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.0.0...v1.0.1) (2021-09-20)
 

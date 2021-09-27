@@ -1,3 +1,19 @@
+# [1.1.0](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.0.1...v1.1.0) (2021-09-27)
+
+
+### Bug Fixes
+
+* Modularised simple and scaling kinesis to avoid unnecessary creation of aws services ([89e7f58](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/89e7f58dc243e6a59653e4789a17f270bb0b4c8b))
+* removed the hardcode value for scaling period to accept as a parameter ([8c6028c](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/8c6028ccc6d6c69ab096e196cf0eac3bb5b2f9c6))
+* Removed the simple kinesis stream - the module is only for kinesis autoscaling ([bb8bb54](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/bb8bb54d24eb0c867eabdee8e030f697734d8811))
+* Removed the simple kinesis stream - the module is only for kinesis autoscaling ([16f155e](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/16f155efcfddd3f8e7a0d173d92e89f8e4bbfab5))
+
+
+### Features
+
+*  Accept additional alarm actions in lambda function to update the alarm metric accordingly ([00e9c53](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/00e9c536006f849c5347578f285ed03ae99e3586))
+*  Consumer of this module can select the autoscaling kinesis or simple kinesis. They can also provide the minimum shard for scale down. ([54fba2b](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/54fba2b7b3632ed06e82b5ec2ee5d7fe65622a04))
+
 ## [1.0.1](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.0.0...v1.0.1) (2021-09-20)
 
 

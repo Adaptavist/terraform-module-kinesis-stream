@@ -1,7 +1,11 @@
+variable "account_id" {
+  type        = string
+  description = "Account Id"
+}
 
-locals {
-  account_id = data.aws_caller_identity.current.account_id
-  region     = data.aws_region.current.name
+variable "region" {
+  type        = string
+  description = "AWS Region"
 }
 
 variable "stream_name" {
@@ -28,6 +32,11 @@ variable "tags" {
 variable "shard_count" {
   type        = number
   description = "Number of Shards"
+}
+
+variable "min_shard_count" {
+  type        = number
+  description = "Minimum Number of Shards"
 }
 
 variable "stream_retention_period" {
@@ -74,5 +83,15 @@ variable "kinesis_scale_down_datapoints_required" {
 variable "kinesis_scale_down_min_iter_age_mins" {
   type        = number
   description = "To compare with streams max iterator age. If the streams max iterator age is above this, then the stream will not scale down"
+}
+
+variable "enable_slack_notification" {
+  type        = bool
+  description = "Enable Scale Notification"
+}
+
+variable "slack_webhook_url" {
+  type        = string
+  description = "Slack Webhook URL"
 }
 

@@ -3,17 +3,17 @@ locals {
   kinesis_period_mins                    = var.kinesis_period_mins
   kinesis_period_secs                    = 60 * local.kinesis_period_mins
   kinesis_scale_up_threshold             = var.kinesis_scale_up_threshold
-  kinesis_scale_up_evaluation_period     = var.kinesis_scale_up_evaluation_period / local.kinesis_period_mins # This value is used here and in stream.tf alarms
-  kinesis_scale_up_datapoints_required   = var.kinesis_scale_up_datapoints_required / local.kinesis_period_mins
+  kinesis_scale_up_evaluation_period     = var.kinesis_scale_up_evaluation_period
+  kinesis_scale_up_datapoints_required   = var.kinesis_scale_up_datapoints_required
   kinesis_scale_down_threshold           = var.kinesis_scale_down_threshold
-  kinesis_scale_down_evaluation_period   = var.kinesis_scale_down_evaluation_period / local.kinesis_period_mins
-  kinesis_scale_down_datapoints_required = var.kinesis_scale_down_datapoints_required / local.kinesis_period_mins
+  kinesis_scale_down_evaluation_period   = var.kinesis_scale_down_evaluation_period
+  kinesis_scale_down_datapoints_required = var.kinesis_scale_down_datapoints_required
   kinesis_scale_down_min_iter_age_mins   = var.kinesis_scale_down_min_iter_age_mins
   kinesis_fatal_error_metric_name        = "FATAL_ERROR_KINESIS_SCALING"
+  slack_notification_arn                 = var.enable_slack_notification ? module.avst_notify_slack.0.alarms_topic_arn : ""
 
 
-
-  kinesis_consumer_lambda_arn        = "arn:aws:lambda:${local.region}:${local.account_id}:function:${local.kinesis_scaling_function_name}"
+  kinesis_consumer_lambda_arn        = "arn:aws:lambda:${var.region}:${var.account_id}:function:${local.kinesis_scaling_function_name}"
   kinesis_consumer_lambdas_per_shard = 5 # Note: Max is 10, you can max it out if a stream can't catch up.
 
 }
@@ -34,7 +34,7 @@ module "scaling_kinesis_lambda" {
   function_name                      = local.kinesis_scaling_function_name
   enable_cloudwatch_logs             = true
   reserved_concurrent_executions     = 1
-  aws_region                         = local.region
+  aws_region                         = var.region
   disable_label_function_name_prefix = true
 
   environment_variables = {
@@ -46,6 +46,8 @@ module "scaling_kinesis_lambda" {
     SCALE_DOWN_EVALUATION_PERIOD   = local.kinesis_scale_down_evaluation_period
     SCALE_DOWN_DATAPOINTS_REQUIRED = local.kinesis_scale_down_datapoints_required
     SCALE_DOWN_MIN_ITER_AGE_MINS   = local.kinesis_scale_down_min_iter_age_mins
+    SCALE_DOWN_MIN_COUNT           = var.min_shard_count
+    ADDITIONAL_ALARM_ACTIONS       = local.slack_notification_arn
     PROCESSING_LAMBDA_ARN          = local.kinesis_consumer_lambda_arn
     PROCESSING_LAMBDAS_PER_SHARD   = local.kinesis_consumer_lambdas_per_shard
     THROTTLE_RETRY_MIN_SLEEP       = 1

@@ -84,7 +84,8 @@ func handleRequest(_ context.Context, snsEvent events.SNSEvent) {
 	var evaluationPeriodScaleUp, evaluationPeriodScaleDown int64
 	var datapointsRequiredScaleUp, datapointsRequiredScaleDown int64
 	var upThreshold, downThreshold float64
-	var scaleDownMinIterAgeMins int64
+	var scaleDownMinIterAgeMins, scaleDownMinCount int64
+	var additionalAlarmActions string
 	var dryRun = true
 	// Note: Investigate envconfig (https://github.com/kelseyhightower/envconfig) to simplify this environment variable section to have less boilerplate.
 	periodMins, err := strconv.ParseInt(os.Getenv("SCALE_PERIOD_MINS"), 10, 64)
@@ -132,6 +133,15 @@ func handleRequest(_ context.Context, snsEvent events.SNSEvent) {
 		// If the streams max iterator age is above this, then the stream will not scale down (we need all the shards/lambdas to clear the backlog, only scale down when it's cleared)
 		scaleDownMinIterAgeMins = 30
 		logMessage := "Error reading the SCALE_DOWN_MIN_ITER_AGE_MINS environment variable. Stream will default to 30 minutes."
+		logger.WithError(err).Error(logMessage)
+		errorHandler(err, logMessage, "", false)
+	}
+
+	scaleDownMinCount, err = strconv.ParseInt(os.Getenv("SCALE_DOWN_MIN_COUNT"), 10, 64)
+	if err != nil {
+		// Scale down minimum count will be defaulted to 1 to be safer side.
+		scaleDownMinCount = 1
+		logMessage := "Error reading the SCALE_DOWN_MIN_COUNT environment variable. Stream min count will default to 1."
 		logger.WithError(err).Error(logMessage)
 		errorHandler(err, logMessage, "", false)
 	}
@@ -183,9 +193,17 @@ func handleRequest(_ context.Context, snsEvent events.SNSEvent) {
 		logger.WithError(err).Error(logMessage)
 		errorHandler(err, logMessage, "", false)
 	}
+
+	// Default additionalAlarmActions value is blank so no additional alarm actions will be appended.
+	additionalAlarmActions = os.Getenv("ADDITIONAL_ALARM_ACTIONS")
+
+
+
 	var currentAlarmAction string
 	var newShardCount, currentShardCount int64
 	var alarmActions []*string
+	var addAlarmActions [] string
+
 
 	// Retrieve the SNS message from the Lambda context.
 	// Retrieve the alarm that triggered lambda from SNS message.
@@ -194,9 +212,23 @@ func handleRequest(_ context.Context, snsEvent events.SNSEvent) {
 	// Retrieve the complimentary alarm name.
 	// Assign values to scaleUpAlarmName and scaleDownAlarmName variable.
 	// Figure out whether the scale action is "Up" or "Down".
+
+	if additionalAlarmActions !="" {
+		addAlarmActions = strings.Split(additionalAlarmActions, ",")
+
+		for alarmCount := range addAlarmActions {
+			alarmActions = append(alarmActions, &addAlarmActions[alarmCount])
+		}
+	}
+
+
 	snsRecord := snsEvent.Records[0].SNS
 	message := snsRecord.Message
+
+
 	alarmActions = append(alarmActions, &snsRecord.TopicArn)
+
+
 	err = json.Unmarshal([]byte(message), &alarmInformation)
 	if err != nil {
 		logMessage := "Log json.Unmarshal error while parsing the SNS message."
@@ -261,7 +293,7 @@ func handleRequest(_ context.Context, snsEvent events.SNSEvent) {
 		return
 	}
 	currentShardCount = *((*streamSummary.StreamDescriptionSummary).OpenShardCount)
-	newShardCount, downThreshold = calculateNewShardCount(currentAlarmAction, downThreshold, currentShardCount)
+	newShardCount, downThreshold = calculateNewShardCount(currentAlarmAction, downThreshold, currentShardCount,scaleDownMinCount)
 	logger = logger.WithField("CurrentShardCount", currentShardCount).WithField("TargetShardCount", newShardCount)
 	if dryRun {
 		logger.Info("This is dry run. Will not scale the stream.")
@@ -285,7 +317,7 @@ func handleRequest(_ context.Context, snsEvent events.SNSEvent) {
 
 	// Update the scale up alarm.
 	// Set the state of the scale up alarm to INSUFFICIENT_DATA.
-	_, err = updateAlarm(scaleUpAlarmName, evaluationPeriodScaleUp, datapointsRequiredScaleUp, upThreshold, cloudwatch.ComparisonOperatorGreaterThanOrEqualToThreshold, streamName, alarmActions, newShardCount, false, 0)
+	_, err = updateAlarm(periodMins, scaleUpAlarmName, evaluationPeriodScaleUp, datapointsRequiredScaleUp, upThreshold, cloudwatch.ComparisonOperatorGreaterThanOrEqualToThreshold, streamName, alarmActions, newShardCount, false, 0)
 	if err != nil {
 		logMessage := fmt.Sprintf("Kinesis stream (%s) has scaled and been tagged with the timestamp but couldn't update the scale-up alarm (%s). Log CloudWatch PutMetricAlarm API error.", streamName, scaleUpAlarmName)
 		logger.WithError(err).Error(logMessage)
@@ -300,7 +332,7 @@ func handleRequest(_ context.Context, snsEvent events.SNSEvent) {
 
 	// Update the scale down alarm.
 	// Set the state of the scale down alarm to INSUFFICIENT_DATA.
-	_, err = updateAlarm(scaleDownAlarmName, evaluationPeriodScaleDown, datapointsRequiredScaleDown, downThreshold, cloudwatch.ComparisonOperatorLessThanThreshold, streamName, alarmActions, newShardCount, true, scaleDownMinIterAgeMins)
+	_, err = updateAlarm(periodMins, scaleDownAlarmName, evaluationPeriodScaleDown, datapointsRequiredScaleDown, downThreshold, cloudwatch.ComparisonOperatorLessThanThreshold, streamName, alarmActions, newShardCount, true, scaleDownMinIterAgeMins)
 	if err != nil {
 		logMessage := fmt.Sprintf("Kinesis stream (%s) has scaled and been tagged with the timestamp but couldn't update the scale-down alarm (%s). Log CloudWatch PutMetricAlarm API error.", streamName, scaleDownAlarmName)
 		logger.WithError(err).Error(logMessage)
@@ -357,12 +389,12 @@ func handleRequest(_ context.Context, snsEvent events.SNSEvent) {
 // newShardCount: The new shard count of the Kinesis Data Stream
 // isScaledown: true if the alarm is for scale down, false if for scale up
 // scaleDownMinIterAgeMins: used for scaleDown only metrics
-func updateAlarm(alarmName string, evaluationPeriod int64, datapointsRequired int64, threshold float64, comparisonOperator string, streamName string, alarmActions []*string, newShardCount int64, isScaleDown bool, scaleDownMinIterAgeMins int64) (*cloudwatch.PutMetricAlarmOutput, error) {
+func updateAlarm(periodMins int64, alarmName string, evaluationPeriod int64, datapointsRequired int64, threshold float64, comparisonOperator string, streamName string, alarmActions []*string, newShardCount int64, isScaleDown bool, scaleDownMinIterAgeMins int64) (*cloudwatch.PutMetricAlarmOutput, error) {
 	var putMetricAlarmResponse *cloudwatch.PutMetricAlarmOutput
 	var err error
 	// Initialize the seed function to get a different random number every execution.
 	rand.Seed(time.Now().UnixNano())
-	var periodMins int64 = 5 // Data is evaluated every 5 minutes
+	// var periodMins int64 = 5 // Data is evaluated every 5 minutes
 	var retryCount int64 = 0
 	var isDone bool
 
@@ -582,7 +614,7 @@ func setAlarmState(alarmName string, state string, reason string) (*cloudwatch.S
 // scaleAction: The scaling action. Possible values are Up and Down
 // downThreshold: The current scaling down threshold. This will be set to -1.0 if the new shard count turns out to be 1
 // currentShardCount: The current open shards in the Kinesis stream
-func calculateNewShardCount(scaleAction string, downThreshold float64, currentShardCount int64) (int64, float64) {
+func calculateNewShardCount(scaleAction string, downThreshold float64, currentShardCount int64,minimumShardCount int64) (int64, float64) {
 	var targetShardCount int64
 	if scaleAction == "Up" {
 		targetShardCount = currentShardCount * 2
@@ -591,8 +623,8 @@ func calculateNewShardCount(scaleAction string, downThreshold float64, currentSh
 	if scaleAction == "Down" {
 		targetShardCount = currentShardCount / 2
 		// Set to minimum shard count
-		if targetShardCount <= 1 {
-			targetShardCount = 1
+		if targetShardCount <= minimumShardCount {
+			targetShardCount = minimumShardCount
 			// At minimum shard count,set the scale down threshold to -1, so that scale down alarm remains in OK state
 			downThreshold = -1.0
 		}

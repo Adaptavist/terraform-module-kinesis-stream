@@ -21,9 +21,13 @@ variable "tags" {
 }
 
 variable "shard_count" {
-  default     = 1
   type        = number
   description = "Number of Shards"
+}
+
+variable "min_shard_count" {
+  type        = number
+  description = "Minimum Number of Shards greater than zero"
 }
 
 variable "stream_retention_period" {
@@ -46,13 +50,13 @@ variable "kinesis_scale_up_threshold" {
 
 
 variable "kinesis_scale_up_evaluation_period" {
-  default     = 25
+  default     = 5
   type        = number
   description = "Period after which the data for the alarm will be evaluated to scale up"
 }
 
 variable "kinesis_scale_up_datapoints_required" {
-  default     = 25
+  default     = 5
   type        = number
   description = "Number of datapoints required in the evaluationPeriod to trigger the alarm to scale up"
 }
@@ -64,13 +68,13 @@ variable "kinesis_scale_down_threshold" {
 }
 
 variable "kinesis_scale_down_evaluation_period" {
-  default     = 300
+  default     = 60
   type        = number
   description = "Period after which the data for the alarm will be evaluated to scale down"
 }
 
 variable "kinesis_scale_down_datapoints_required" {
-  default     = 285
+  default     = 57
   type        = number
   description = "Number of datapoints required in the evaluationPeriod to trigger the alarm to scale down"
 }
@@ -79,4 +83,16 @@ variable "kinesis_scale_down_min_iter_age_mins" {
   default     = 30
   type        = number
   description = "To compare with streams max iterator age. If the streams max iterator age is above this, then the stream will not scale down"
+}
+
+
+variable "enable_slack_notification" {
+  type        = bool
+  default     = false
+  description = "Enable Scale Notification"
+}
+
+variable "slack_web_hook" {
+  type        = string
+  description = "Web hook name"
 }

@@ -1,10 +1,10 @@
-# Terraform configuration
 
 module "kinesis_scaling" {
   source = "./modules/stream_scaling"
 
   stream_name                            = var.stream_name
   shard_count                            = var.shard_count
+  min_shard_count                        = var.min_shard_count
   stream_retention_period                = var.stream_retention_period
   encryption_type                        = var.encryption_type
   kms_key_id                             = var.kms_key_id
@@ -17,4 +17,8 @@ module "kinesis_scaling" {
   kinesis_scale_up_datapoints_required   = var.kinesis_scale_up_datapoints_required
   kinesis_scale_up_evaluation_period     = var.kinesis_scale_up_evaluation_period
   kinesis_scale_up_threshold             = var.kinesis_scale_up_threshold
+  enable_slack_notification              = var.enable_slack_notification
+  account_id                             = data.aws_caller_identity.current.account_id
+  region                                 = data.aws_region.current.name
+  slack_webhook_url                      = data.aws_ssm_parameter.slack_webhook.value
 }

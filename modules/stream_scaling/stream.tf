@@ -20,6 +20,45 @@ resource "aws_kinesis_stream" "autoscaling_kinesis_stream" {
   }
 }
 
+resource "aws_cloudwatch_metric_alarm" "kinesis-write-throughput-exceeded" {
+  alarm_name          = "${var.stream_name}-write-throughput"
+  alarm_description   = "Indicates that the kinesis stream write throughput has been exceeded"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  period              = 300
+  threshold           = 10
+  metric_name         = "WriteProvisionedThroughputExceeded"
+  namespace           = "AWS/Kinesis"
+  statistic           = "Average"
+  treat_missing_data  = "notBreaching"
+  alarm_actions       = compact(module.avst_notify_slack.*.alarms_topic_arn)
+  ok_actions          = compact(module.avst_notify_slack.*.alarms_topic_arn)
+  dimensions = {
+    StreamName = var.stream_name
+  }
+  tags = var.tags
+}
+
+resource "aws_cloudwatch_metric_alarm" "kinesis-read-throughput-exceeded" {
+  alarm_name          = "${var.stream_name}-read-throughput"
+  alarm_description   = "Indicates that the kinesis stream provisioned read throughput has been exceeded"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  period              = 300
+  threshold           = 10
+  metric_name         = "ReadProvisionedThroughputExceeded"
+  namespace           = "AWS/Kinesis"
+  statistic           = "Average"
+  treat_missing_data  = "notBreaching"
+  alarm_actions       = compact(module.avst_notify_slack.*.alarms_topic_arn)
+  ok_actions          = compact(module.avst_notify_slack.*.alarms_topic_arn)
+  dimensions = {
+    StreamName = var.stream_name
+  }
+  tags = var.tags
+}
+
+
 ######################################################
 # Kinesis Data Stream Scaling Alarms
 ######################################################
@@ -31,7 +70,7 @@ resource "aws_cloudwatch_metric_alarm" "kinesis_scale_up" {
   threshold                 = local.kinesis_scale_up_threshold           # Defined in scale.tf
   alarm_description         = "Stream throughput has gone above the scale up threshold"
   insufficient_data_actions = []
-  alarm_actions             = var.enable_autoscaling ? [aws_sns_topic.kinesis_scaling_sns_topic.arn, local.slack_notification_arn] : [local.slack_notification_arn]
+  alarm_actions             = [aws_sns_topic.kinesis_scaling_sns_topic.arn,local.slack_notification_arn]
   tags                      = var.tags
 
   metric_query {
@@ -122,7 +161,7 @@ resource "aws_cloudwatch_metric_alarm" "kinesis_scale_down" {
   threshold                 = var.shard_count == var.min_shard_count ? -1 : local.kinesis_scale_down_threshold # Defined in scale.tf
   alarm_description         = "Stream throughput has gone below the scale down threshold"
   insufficient_data_actions = []
-  alarm_actions             = var.enable_autoscaling ? [aws_sns_topic.kinesis_scaling_sns_topic.arn, local.slack_notification_arn] : [local.slack_notification_arn]
+  alarm_actions             = [aws_sns_topic.kinesis_scaling_sns_topic.arn,local.slack_notification_arn]
   tags                      = var.tags
 
   metric_query {

@@ -87,14 +87,9 @@ variable "kinesis_scale_down_min_iter_age_mins" {
   description = "To compare with streams max iterator age. If the streams max iterator age is above this, then the stream will not scale down"
 }
 
-variable "enable_autoscaling" {
-  type        = bool
-  default     = false
-  description = "Enable autoscaling"
-}
 
 variable "enable_slack_notification" {
   type        = bool
-  default     = true
+  default     = false
   description = "Enable Scale Notification"
 }

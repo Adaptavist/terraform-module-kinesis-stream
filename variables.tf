@@ -21,7 +21,6 @@ variable "tags" {
 }
 
 variable "shard_count" {
-  default     = 1
   type        = number
   description = "Number of Shards"
 }
@@ -92,4 +91,9 @@ variable "enable_slack_notification" {
   type        = bool
   default     = false
   description = "Enable Scale Notification"
+}
+
+variable "slack_web_hook" {
+  type        = string
+  description = "Web hook name"
 }

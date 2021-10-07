@@ -10,7 +10,7 @@ resource "aws_kinesis_stream" "autoscaling_kinesis_stream" {
   tags             = var.tags
 
   shard_level_metrics = [
-    "IncomingBytes", "IncomingRecords",
+    "IncomingBytes", "IncomingRecords", "ReadProvisionedThroughputExceeded", "OutgoingRecords", "IteratorAgeMilliseconds", "WriteProvisionedThroughputExceeded"
   ]
 
   lifecycle {
@@ -21,7 +21,7 @@ resource "aws_kinesis_stream" "autoscaling_kinesis_stream" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "kinesis-write-throughput-exceeded" {
-  alarm_name          = "${var.stream_name}-write-throughput"
+  alarm_name          = "${var.stream_name}-write-throughput-${var.tags["Avst:Stage:Name"]}"
   alarm_description   = "Indicates that the kinesis stream write throughput has been exceeded"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 1
@@ -32,7 +32,6 @@ resource "aws_cloudwatch_metric_alarm" "kinesis-write-throughput-exceeded" {
   statistic           = "Average"
   treat_missing_data  = "notBreaching"
   alarm_actions       = compact(module.avst_notify_slack.*.alarms_topic_arn)
-  ok_actions          = compact(module.avst_notify_slack.*.alarms_topic_arn)
   dimensions = {
     StreamName = var.stream_name
   }
@@ -40,7 +39,7 @@ resource "aws_cloudwatch_metric_alarm" "kinesis-write-throughput-exceeded" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "kinesis-read-throughput-exceeded" {
-  alarm_name          = "${var.stream_name}-read-throughput"
+  alarm_name          = "${var.stream_name}-read-throughput-${var.tags["Avst:Stage:Name"]}"
   alarm_description   = "Indicates that the kinesis stream provisioned read throughput has been exceeded"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 1
@@ -51,13 +50,83 @@ resource "aws_cloudwatch_metric_alarm" "kinesis-read-throughput-exceeded" {
   statistic           = "Average"
   treat_missing_data  = "notBreaching"
   alarm_actions       = compact(module.avst_notify_slack.*.alarms_topic_arn)
-  ok_actions          = compact(module.avst_notify_slack.*.alarms_topic_arn)
   dimensions = {
     StreamName = var.stream_name
   }
   tags = var.tags
 }
 
+resource "aws_cloudwatch_metric_alarm" "kinesis-iterator-age-crossed" {
+  alarm_name          = "${var.stream_name}-kinesis-iterator-age-${var.tags["Avst:Stage:Name"]}"
+  alarm_description   = "Indicates that the consuming rate is slow"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  period              = 300
+  threshold           = (var.stream_retention_period * 60 * 60) / 50
+  metric_name         = "GetRecords.IteratorAgeMilliseconds"
+  namespace           = "AWS/Kinesis"
+  statistic           = "Maximum"
+  treat_missing_data  = "notBreaching"
+  alarm_actions       = compact(module.avst_notify_slack.*.alarms_topic_arn)
+  dimensions = {
+    StreamName = var.stream_name
+  }
+  tags = var.tags
+}
+
+resource "aws_cloudwatch_metric_alarm" "kinesis-put-records-failure" {
+  alarm_name          = "${var.stream_name}-kinesis-put-records-${var.tags["Avst:Stage:Name"]}"
+  alarm_description   = "Indicates that the avg number of records failed while putting "
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  period              = 300
+  threshold           = 5
+  metric_name         = "PutRecords.Success"
+  namespace           = "AWS/Kinesis"
+  statistic           = "Average"
+  treat_missing_data  = "notBreaching"
+  alarm_actions       = compact(module.avst_notify_slack.*.alarms_topic_arn)
+  dimensions = {
+    StreamName = var.stream_name
+  }
+  tags = var.tags
+}
+
+resource "aws_cloudwatch_metric_alarm" "kinesis-put-record-failure" {
+  alarm_name          = "${var.stream_name}-kinesis-put-record-${var.tags["Avst:Stage:Name"]}"
+  alarm_description   = "Indicates that the avg number of records failed while putting "
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  period              = 300
+  threshold           = 5
+  metric_name         = "PutRecord.Success"
+  namespace           = "AWS/Kinesis"
+  statistic           = "Average"
+  treat_missing_data  = "notBreaching"
+  alarm_actions       = compact(module.avst_notify_slack.*.alarms_topic_arn)
+  dimensions = {
+    StreamName = var.stream_name
+  }
+  tags = var.tags
+}
+
+resource "aws_cloudwatch_metric_alarm" "kinesis-get-records-failure" {
+  alarm_name          = "${var.stream_name}-kinesis-get-records-${var.tags["Avst:Stage:Name"]}"
+  alarm_description   = "Indicates that the avg number of records failed while getting "
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  period              = 300
+  threshold           = 5
+  metric_name         = "GetRecords.Success"
+  namespace           = "AWS/Kinesis"
+  statistic           = "Average"
+  treat_missing_data  = "notBreaching"
+  alarm_actions       = compact(module.avst_notify_slack.*.alarms_topic_arn)
+  dimensions = {
+    StreamName = var.stream_name
+  }
+  tags = var.tags
+}
 
 ######################################################
 # Kinesis Data Stream Scaling Alarms
@@ -70,7 +139,7 @@ resource "aws_cloudwatch_metric_alarm" "kinesis_scale_up" {
   threshold                 = local.kinesis_scale_up_threshold           # Defined in scale.tf
   alarm_description         = "Stream throughput has gone above the scale up threshold"
   insufficient_data_actions = []
-  alarm_actions             = [aws_sns_topic.kinesis_scaling_sns_topic.arn,local.slack_notification_arn]
+  alarm_actions             = [aws_sns_topic.kinesis_scaling_sns_topic.arn, local.slack_notification_arn]
   tags                      = var.tags
 
   metric_query {
@@ -122,13 +191,13 @@ resource "aws_cloudwatch_metric_alarm" "kinesis_scale_up" {
   metric_query {
     id         = "e3"
     label      = "IncomingBytesUsageFactor"
-    expression = "e1/(1024*1024*60*${local.kinesis_period_mins}*s1)"
+    expression = "e1/(1024*1024*60*${local.kinesis_period_mins}*s1)" //Divide by 2*1024(convert to MB first) as 1 Shard supports 1 MB per secs. As e1 is total sum of five mins so calculate it for one second and multiply with shard.
   }
 
   metric_query {
     id         = "e4"
     label      = "IncomingRecordsUsageFactor"
-    expression = "e2/(1000*60*${local.kinesis_period_mins}*s1)"
+    expression = "e2/(1000*60*${local.kinesis_period_mins}*s1)" //Divide by 1000 as 1 Shard supports 1000 record per secs. As e2 is total sum of five mins so calculate it for one sec and multiply with shard.
   }
 
   metric_query {
@@ -161,7 +230,7 @@ resource "aws_cloudwatch_metric_alarm" "kinesis_scale_down" {
   threshold                 = var.shard_count == var.min_shard_count ? -1 : local.kinesis_scale_down_threshold # Defined in scale.tf
   alarm_description         = "Stream throughput has gone below the scale down threshold"
   insufficient_data_actions = []
-  alarm_actions             = [aws_sns_topic.kinesis_scaling_sns_topic.arn,local.slack_notification_arn]
+  alarm_actions             = [aws_sns_topic.kinesis_scaling_sns_topic.arn, local.slack_notification_arn]
   tags                      = var.tags
 
   metric_query {
@@ -245,7 +314,7 @@ resource "aws_cloudwatch_metric_alarm" "kinesis_scale_down" {
   metric_query {
     id         = "e5"
     label      = "IteratorAgeAdjustedFactor"
-    expression = "(FILL(m3,0)/1000/60)*(${local.kinesis_scale_down_threshold}/s2)" # We want to block scaledowns when IterAge is > 60 mins, multiply IterAge so 60 mins = <alarmThreshold>
+    expression = "(FILL(m3,0)/1000/60)*(${local.kinesis_scale_down_threshold}/s2)" # We want to block scaledowns when IterAge is > kinesis_scale_down_min_iter_age_mins , multiply IterAge so 60 mins = <alarmThreshold>
   }
 
   metric_query {

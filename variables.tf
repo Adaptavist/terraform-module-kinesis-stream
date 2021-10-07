@@ -42,6 +42,12 @@ variable "kinesis_scaling_period_mins" {
   description = "Scaling Period in minute"
 }
 
+variable "kinesis_cooldown_mins" {
+  default     = 10
+  type        = number
+  description = "Cooling down Period in minutes"
+}
+
 variable "kinesis_scale_up_threshold" {
   default     = 0.75
   type        = number

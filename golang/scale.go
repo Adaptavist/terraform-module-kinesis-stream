@@ -77,6 +77,7 @@ func init() {
 // Update Alarm Tags.
 func handleRequest(_ context.Context, snsEvent events.SNSEvent) {
 	var periodMins int64
+	var scaleCoolDownPeriod int64
 	var alarmInformation aws.JSONValue
 	var scaleUpAlarmName string
 	var scaleDownAlarmName string
@@ -86,6 +87,7 @@ func handleRequest(_ context.Context, snsEvent events.SNSEvent) {
 	var upThreshold, downThreshold float64
 	var scaleDownMinIterAgeMins, scaleDownMinCount int64
 	var additionalAlarmActions string
+
 	var dryRun = true
 	// Note: Investigate envconfig (https://github.com/kelseyhightower/envconfig) to simplify this environment variable section to have less boilerplate.
 	periodMins, err := strconv.ParseInt(os.Getenv("SCALE_PERIOD_MINS"), 10, 64)
@@ -96,6 +98,16 @@ func handleRequest(_ context.Context, snsEvent events.SNSEvent) {
 		logger.WithError(err).Error(logMessage)
 		errorHandler(err, logMessage, "", false)
 	}
+
+	scaleCoolDownPeriod, err = strconv.ParseInt(os.Getenv("SCALE_COOLDOWN_MINS"), 10, 64)
+	if err != nil {
+		// Default cool off period in minutes.
+		scaleCoolDownPeriod = 10
+		logMessage := "Error reading the SCALE_COOLDOWN_MINS environment variable. Default 10 mins cool off period will be used."
+		logger.WithError(err).Error(logMessage)
+		errorHandler(err, logMessage, "", false)
+	}
+
 	evaluationPeriodScaleUp, err = strconv.ParseInt(os.Getenv("SCALE_UP_EVALUATION_PERIOD"), 10, 64)
 	if err != nil {
 		// Default scale-up alarm evaluation period.
@@ -267,7 +279,7 @@ func handleRequest(_ context.Context, snsEvent events.SNSEvent) {
 	streamName := getStreamName(alarmInformation)
 	logger = logger.WithField("StreamName", streamName)
 	logger.Info("Received scaling event. Will now scale the stream")
-	scaleStream := checkLastScaledTimestamp(lastScaledTimestamp, alarmInformation["StateChangeTime"].(string), 0)
+	scaleStream := checkLastScaledTimestamp(lastScaledTimestamp, alarmInformation["StateChangeTime"].(string), scaleCoolDownPeriod)
 	if !scaleStream {
 		//Ignore this attempt and exit.
 		logger.Info("Scale-" + currentAlarmAction + " event rejected")
@@ -751,7 +763,7 @@ func checkLastScaledTimestamp(lastScaledTimestamp string, alarmTime string, scal
 		return scaleStream
 	}
 
-	// Too soon since the last scaling event, do not scale (unused feature right now and set to 0)
+	// Too soon since the last scaling event, do not scale
 	var nextAllowedScalingEvent = lastScaled.Add(time.Minute * time.Duration(scalingPeriodMins))
 	if stateChangeTime.Before(nextAllowedScalingEvent) {
 		scaleStream = false

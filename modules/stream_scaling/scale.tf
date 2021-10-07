@@ -2,6 +2,7 @@ locals {
   kinesis_scaling_function_name          = "${var.stream_name}-kinesis-scale-helper"
   kinesis_period_mins                    = var.kinesis_period_mins
   kinesis_period_secs                    = 60 * local.kinesis_period_mins
+  kinesis_cooldown_period                = var.kinesis_cooldown_mins
   kinesis_scale_up_threshold             = var.kinesis_scale_up_threshold
   kinesis_scale_up_evaluation_period     = var.kinesis_scale_up_evaluation_period
   kinesis_scale_up_datapoints_required   = var.kinesis_scale_up_datapoints_required
@@ -39,6 +40,7 @@ module "scaling_kinesis_lambda" {
 
   environment_variables = {
     SCALE_PERIOD_MINS              = local.kinesis_period_mins
+    SCALE_COOLDOWN_MINS            = local.kinesis_cooldown_period
     SCALE_UP_THRESHOLD             = local.kinesis_scale_up_threshold
     SCALE_UP_EVALUATION_PERIOD     = local.kinesis_scale_up_evaluation_period
     SCALE_UP_DATAPOINTS_REQUIRED   = local.kinesis_scale_up_datapoints_required

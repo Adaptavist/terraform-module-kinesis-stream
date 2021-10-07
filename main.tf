@@ -10,6 +10,7 @@ module "kinesis_scaling" {
   kms_key_id                             = var.kms_key_id
   tags                                   = var.tags
   kinesis_period_mins                    = var.kinesis_scaling_period_mins
+  kinesis_cooldown_mins                  = var.kinesis_cooldown_mins
   kinesis_scale_down_datapoints_required = var.kinesis_scale_down_datapoints_required
   kinesis_scale_down_evaluation_period   = var.kinesis_scale_down_evaluation_period
   kinesis_scale_down_min_iter_age_mins   = var.kinesis_scale_down_min_iter_age_mins

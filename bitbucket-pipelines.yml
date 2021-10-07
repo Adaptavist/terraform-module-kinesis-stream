@@ -23,7 +23,8 @@ definitions:
       # lambda
     - &kinesis-scaling export LAMBDA=golang
       # go build
-    - &lambda-build (cd ${LAMBDA}/ && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ../modules/stream_scaling/lambda/kinesis_scaling/main scale.go)
+    - &lambda-build >
+      cd ${LAMBDA}/ && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ../modules/stream_scaling/lambda/kinesis_scaling/main scale.go &&
       git config pull.ff only &&
       git pull &&
       git add ../modules/stream_scaling/lambda/kinesis_scaling/main &&

@@ -28,6 +28,7 @@ definitions:
       git config pull.ff only &&
       git pull &&
       git add ../modules/stream_scaling/lambda/kinesis_scaling/main &&
+      git diff --quiet && git diff --staged --quiet || git commit -m "Added the updated main file" &&
       git push
 
 pipelines:

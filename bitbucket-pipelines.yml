@@ -21,13 +21,13 @@ definitions:
       checkov --quiet --compact -s -d .
 
       # lambda
-    - &kinesis-scaling export LAMBDA=golang
+    - &kinesis-scaling export LAMBDA=golang;MAINPATH=../modules/stream_scaling/lambda/kinesis_scaling
       # go build
     - &lambda-build >
-      cd ${LAMBDA}/ && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ../modules/stream_scaling/lambda/kinesis_scaling/main scale.go &&
+      cd ${LAMBDA}/ && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ${MAINPATH}/main scale.go &&
       git config pull.ff only &&
       git pull &&
-      git add ../modules/stream_scaling/lambda/kinesis_scaling/main &&
+      git add ${MAINPATH}/main &&
       git diff --quiet && git diff --staged --quiet || git commit -m "[skip ci] Added the updated main file" &&
       git push
 

@@ -94,7 +94,7 @@ func handleRequest(_ context.Context, snsEvent events.SNSEvent) {
 	if err != nil {
 		// Default scaling period in minutes.
 		periodMins = 5
-		logMessage := "Error reading the SCALE_PERIOD_MINS environment variable. Stream will scale and update the scale-up alarm with default scaling period of 5 minute(s)."
+		logMessage := "Error reading the SCALE_PERIOD_MINS environment variable. Stream will scale and update the alarm with default scaling period of 5 minute(s)."
 		logger.WithError(err).Error(logMessage)
 		errorHandler(err, logMessage, "", false)
 	}

@@ -62,7 +62,7 @@ resource "aws_cloudwatch_metric_alarm" "kinesis-iterator-age-crossed" {
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 1
   period              = 300
-  threshold           = (var.stream_retention_period * 60 * 60) / 50
+  threshold           = (var.stream_retention_period * 60 * 60 * 1000) / 2
   metric_name         = "GetRecords.IteratorAgeMilliseconds"
   namespace           = "AWS/Kinesis"
   statistic           = "Maximum"

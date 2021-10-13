@@ -34,7 +34,7 @@ A lightweight system to automatically scale Kinesis Data Streams up and down bas
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | enable\_slack\_notification | Enable Slack Notification | `bool` | `false` | no |
-| encryption\_type | Encryption Type | `string` | `"KMS"` | no |
+| encryption\_type | Encryption Type | `string` | `KMS` | no |
 | kinesis\_cooldown\_mins | Cooling down Period in minutes | `number` | `10` | no |
 | kinesis\_scale\_down\_datapoints\_required | Number of datapoints required in the evaluationPeriod to trigger the alarm to scale down | `number` | `285` | no |
 | kinesis\_scale\_down\_evaluation\_period | Period after which the data for the alarm will be evaluated to scale down | `number` | `300` | no |

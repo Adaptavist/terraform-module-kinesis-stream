@@ -49,6 +49,12 @@ variable "kinesis_period_mins" {
   description = "Scaling Period in minute"
 }
 
+variable "kinesis_cooldown_mins" {
+  type        = number
+  description = "Cooling down Period in minutes"
+}
+
+
 variable "kinesis_scale_up_threshold" {
   type        = number
   description = "Scale up threshold"
@@ -93,5 +99,10 @@ variable "enable_slack_notification" {
 variable "slack_webhook_url" {
   type        = string
   description = "Slack Webhook URL"
+}
+
+variable "slack_channel_name" {
+  type        = string
+  description = "Slack Channel name"
 }
 

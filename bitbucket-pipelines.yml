@@ -6,6 +6,8 @@ definitions:
     entrypoint:
       - '/usr/bin/env'
       - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+  go-lang: &go-lang
+    name: golang:1
 
   release: &release
     name: release
@@ -18,10 +20,24 @@ definitions:
       checkov --quiet --compact -s -d . -o github_failed_only > compliance-issues.md &&
       checkov --quiet --compact -s -d .
 
+      # lambda
+    - &kinesis-scaling export LAMBDA=golang;MAINPATH=../modules/stream_scaling/lambda/kinesis_scaling
+      # go build
+    - &lambda-build >
+      cd ${LAMBDA}/ && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ${MAINPATH}/main scale.go &&
+      git config pull.ff only &&
+      git pull &&
+      git add ${MAINPATH}/main &&
+      git diff --quiet && git diff --staged --quiet || git commit -m "[skip ci] Added the updated main file" &&
+      git push
+
 pipelines:
   default:
     - step: { name: 'Checkov analysis', script: [ *checkov ], image: *checkov-image, services: [ docker ] }
+    - step: { name: 'kinesis-scaling build lambda',         image: *go-lang, script: [ *kinesis-scaling, *lambda-build ], artifacts: ['/modules/stream_scaling/lambda/kinesis_scaling/main'] }
+
 
   branches:
     main:
+      - step: { name: 'kinesis-scaling build lambda',         image: *go-lang, script: [ *kinesis-scaling, *lambda-build ], artifacts: ['/modules/stream_scaling/lambda/kinesis_scaling/main'] }
       - step: *release

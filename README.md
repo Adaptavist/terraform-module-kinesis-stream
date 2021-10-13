@@ -33,7 +33,9 @@ A lightweight system to automatically scale Kinesis Data Streams up and down bas
 ## Variables
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| enable\_slack\_notification | Enable Slack Notification | `bool` | `false` | no |
 | encryption\_type | Encryption Type | `string` | `"KMS"` | no |
+| kinesis\_cooldown\_mins | Cooling down Period in minutes | `number` | `10` | no |
 | kinesis\_scale\_down\_datapoints\_required | Number of datapoints required in the evaluationPeriod to trigger the alarm to scale down | `number` | `285` | no |
 | kinesis\_scale\_down\_evaluation\_period | Period after which the data for the alarm will be evaluated to scale down | `number` | `300` | no |
 | kinesis\_scale\_down\_min\_iter\_age\_mins | To compare with streams max iterator age. If the streams max iterator age is above this, then the stream will not scale down | `number` | `30` | no |
@@ -43,7 +45,10 @@ A lightweight system to automatically scale Kinesis Data Streams up and down bas
 | kinesis\_scale\_up\_threshold | Scale up threshold | `number` | `0.75` | no |
 | kinesis\_scaling\_period\_mins | Scaling Period in minute | `number` | `5` | no |
 | kms\_key\_id | KMS Key | `string` | n/a | yes |
+| min\_shard\_count | Minimum Number of Shards greater than zero | `number` | `5` | yes |
 | shard\_count | Number of Shards | `number` | `1` | no |
+| slack\_channel\_name | Slack Channel Name | `string` | n/a | no |
+| slack\_web\_hook | Slack web hook SSM Parameter Name | `string` | n/a | yes |
 | stream\_name | Stream Name | `string` | n/a | yes |
 | stream\_retention\_period | Stream Retention Period | `number` | `24` | no |
 | tags | Map of tags that should be applied to all resources | `map(string)` | n/a | yes |

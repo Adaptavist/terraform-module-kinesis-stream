@@ -100,10 +100,11 @@ variable "enable_slack_notification" {
 
 variable "slack_web_hook" {
   type        = string
-  description = "Web hook name"
+  description = "Web hook SSM parameter name"
 }
 
 variable "slack_channel_name" {
   type        = string
   description = "Slack Channel name"
+  default     = ""
 }

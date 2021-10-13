@@ -1,3 +1,10 @@
+## [1.2.1](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.2.0...v1.2.1) (2021-10-13)
+
+
+### Bug Fixes
+
+* Corrected the readme file ([da02913](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/da0291349b989c27d05318142b922fad09fffc13))
+
 # [1.2.0](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.1.1...v1.2.0) (2021-10-13)
 
 

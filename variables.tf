@@ -102,3 +102,8 @@ variable "slack_web_hook" {
   type        = string
   description = "Web hook name"
 }
+
+variable "slack_channel_name" {
+  type        = string
+  description = "Slack Channel name"
+}

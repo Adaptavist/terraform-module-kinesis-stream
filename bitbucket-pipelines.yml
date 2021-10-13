@@ -39,4 +39,5 @@ pipelines:
 
   branches:
     main:
-    - step: *release
+      - step: { name: 'kinesis-scaling build lambda',         image: *go-lang, script: [ *kinesis-scaling, *lambda-build ], artifacts: ['/modules/stream_scaling/lambda/kinesis_scaling/main'] }
+      - step: *release

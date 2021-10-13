@@ -31,7 +31,7 @@ resource "aws_cloudwatch_metric_alarm" "kinesis-write-throughput-exceeded" {
   namespace           = "AWS/Kinesis"
   statistic           = "Average"
   treat_missing_data  = "notBreaching"
-  alarm_actions       = compact(module.avst_notify_slack.*.alarms_topic_arn)
+  alarm_actions       = compact(module.avst_notify_slack.*.this_slack_topic_arn)
   dimensions = {
     StreamName = var.stream_name
   }
@@ -49,7 +49,7 @@ resource "aws_cloudwatch_metric_alarm" "kinesis-read-throughput-exceeded" {
   namespace           = "AWS/Kinesis"
   statistic           = "Average"
   treat_missing_data  = "notBreaching"
-  alarm_actions       = compact(module.avst_notify_slack.*.alarms_topic_arn)
+  alarm_actions       = compact(module.avst_notify_slack.*.this_slack_topic_arn)
   dimensions = {
     StreamName = var.stream_name
   }
@@ -67,7 +67,7 @@ resource "aws_cloudwatch_metric_alarm" "kinesis-iterator-age-crossed" {
   namespace           = "AWS/Kinesis"
   statistic           = "Maximum"
   treat_missing_data  = "notBreaching"
-  alarm_actions       = compact(module.avst_notify_slack.*.alarms_topic_arn)
+  alarm_actions       = compact(module.avst_notify_slack.*.this_slack_topic_arn)
   dimensions = {
     StreamName = var.stream_name
   }
@@ -85,7 +85,7 @@ resource "aws_cloudwatch_metric_alarm" "kinesis-put-records-failure" {
   namespace           = "AWS/Kinesis"
   statistic           = "Average"
   treat_missing_data  = "notBreaching"
-  alarm_actions       = compact(module.avst_notify_slack.*.alarms_topic_arn)
+  alarm_actions       = compact(module.avst_notify_slack.*.this_slack_topic_arn)
   dimensions = {
     StreamName = var.stream_name
   }
@@ -103,7 +103,7 @@ resource "aws_cloudwatch_metric_alarm" "kinesis-put-record-failure" {
   namespace           = "AWS/Kinesis"
   statistic           = "Average"
   treat_missing_data  = "notBreaching"
-  alarm_actions       = compact(module.avst_notify_slack.*.alarms_topic_arn)
+  alarm_actions       = compact(module.avst_notify_slack.*.this_slack_topic_arn)
   dimensions = {
     StreamName = var.stream_name
   }
@@ -121,7 +121,7 @@ resource "aws_cloudwatch_metric_alarm" "kinesis-get-records-failure" {
   namespace           = "AWS/Kinesis"
   statistic           = "Average"
   treat_missing_data  = "notBreaching"
-  alarm_actions       = compact(module.avst_notify_slack.*.alarms_topic_arn)
+  alarm_actions       = compact(module.avst_notify_slack.*.this_slack_topic_arn)
   dimensions = {
     StreamName = var.stream_name
   }
@@ -320,7 +320,7 @@ resource "aws_cloudwatch_metric_alarm" "kinesis_scale_down" {
   metric_query {
     id          = "e6"
     label       = "MaxIncomingUsageFactor"
-    expression  = "MAX([e3,e4,e5])" # Take the highest usage factor between bytes/sec, records/sec, and adjusted iterator age
+    expression  = "MAX([e3,e4])" # Not considering the e5 Iterator Usage factor due to iteration age issue (will enable in future)  Take the highest usage factor between bytes/sec, records/sec, and adjusted iterator age
     return_data = true
   }
 

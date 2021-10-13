@@ -11,7 +11,7 @@ locals {
   kinesis_scale_down_datapoints_required = var.kinesis_scale_down_datapoints_required
   kinesis_scale_down_min_iter_age_mins   = var.kinesis_scale_down_min_iter_age_mins
   kinesis_fatal_error_metric_name        = "FATAL_ERROR_KINESIS_SCALING"
-  slack_notification_arn                 = var.enable_slack_notification ? module.avst_notify_slack.0.alarms_topic_arn : ""
+  slack_notification_arn                 = var.enable_slack_notification ? module.avst_notify_slack.0.this_slack_topic_arn : ""
 
 
   kinesis_consumer_lambda_arn        = "arn:aws:lambda:${var.region}:${var.account_id}:function:${local.kinesis_scaling_function_name}"
@@ -21,7 +21,7 @@ locals {
 
 module "scaling_kinesis_lambda" {
   source                             = "Adaptavist/aws-lambda/module"
-  version                            = "1.10.2"
+  version                            = "1.11.0"
   name                               = local.kinesis_scaling_function_name
   namespace                          = var.tags["Avst:BusinessUnit"]
   stage                              = var.tags["Avst:Stage:Name"]

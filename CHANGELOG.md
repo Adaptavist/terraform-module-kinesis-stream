@@ -1,3 +1,10 @@
+# [1.2.0](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.1.1...v1.2.0) (2021-10-13)
+
+
+### Features
+
+* Enabled the cool down period to avoid frequent scaling actions ([ced3a45](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/ced3a45013f8a4cf8f9c3607469d8a32ed9094cd))
+
 ## [1.1.1](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.1.0...v1.1.1) (2021-09-27)
 
 

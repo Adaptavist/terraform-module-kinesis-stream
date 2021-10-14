@@ -1,3 +1,10 @@
+## [1.2.2](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.2.1...v1.2.2) (2021-10-14)
+
+
+### Bug Fixes
+
+* Removed the alarms other than scaling from the module ([08e5626](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/08e5626204927a27e041319556e8fca52b0c4b69))
+
 ## [1.2.1](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.2.0...v1.2.1) (2021-10-13)
 
 

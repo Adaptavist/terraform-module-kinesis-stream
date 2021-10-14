@@ -512,7 +512,7 @@ func updateAlarm(periodMins int64, alarmName string, evaluationPeriod int64, dat
 	if isScaleDown {
 		metrics = append(metrics, &cloudwatch.MetricDataQuery{
 			Id:         aws.String("e6"),
-			Expression: aws.String("MAX([e3,e4,e5])"), // Scale down takes into account e5 (max iterator age), add it here
+			Expression: aws.String("MAX([e3,e4])"), // Temp. removed e5(IteratorAgeAdjustedFactor) Scale down takes into account e5 (max iterator age), add it here
 			Label:      aws.String("MaxIncomingUsageFactor"),
 			ReturnData: aws.Bool(true),
 		})

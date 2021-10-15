@@ -1,3 +1,10 @@
+## [1.2.3](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.2.2...v1.2.3) (2021-10-15)
+
+
+### Bug Fixes
+
+* Removed the e5 factor from scale.go ([f054e3f](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/f054e3f4e008cf5913ee6e2da0f7d3b3d480f099))
+
 ## [1.2.2](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.2.1...v1.2.2) (2021-10-14)
 
 

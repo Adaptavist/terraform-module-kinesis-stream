@@ -98,9 +98,10 @@ variable "enable_slack_notification" {
   description = "Enable Scale Notification"
 }
 
-variable "slack_web_hook" {
+variable "slack_web_hook_url" {
   type        = string
   description = "Web hook SSM parameter name"
+  default     = ""
 }
 
 variable "slack_channel_name" {

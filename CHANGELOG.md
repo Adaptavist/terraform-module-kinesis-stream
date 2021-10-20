@@ -1,3 +1,10 @@
+## [1.2.4](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.2.3...v1.2.4) (2021-10-20)
+
+
+### Bug Fixes
+
+* Changed to slack web hook URL ([89f2d7d](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/89f2d7d5a0e42421741a94a29a20a7e6f475198e))
+
 ## [1.2.3](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.2.2...v1.2.3) (2021-10-15)
 
 

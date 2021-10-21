@@ -1,16 +1,18 @@
+
+
 module "avst_notify_slack" {
-  source  = "terraform-aws-modules/notify-slack/aws"
-  version = "4.17.0"
+  source  = "Adaptavist/aws-alarms-slack/module"
+  version = "2.2.0"
 
   count = var.enable_slack_notification ? 1 : 0
 
-  sns_topic_name       = "${var.stream_name}-slack-topic"
-  lambda_function_name = "${var.stream_name}-slack-notification"
-
-  slack_webhook_url = var.slack_webhook_url
-  slack_channel     = var.slack_channel_name
-  slack_username    = "${var.stream_name}-reporter"
-
-  tags = var.tags
+  function_name        = "${var.stream_name}-alarm-${var.tags["Avst:BusinessUnit"]}-${var.tags["Avst:Stage:Name"]}"
+  description          = "Lambda for cloudwatch alarms from Kinesis"
+  namespace            = var.tags["Avst:BusinessUnit"]
+  name                 = "aws-alarms-slack"
+  stage                = var.tags["Avst:Stage:Name"]
+  tags                 = var.tags
+  slack_webhook_url    = var.slack_webhook_url
+  display_service_name = "${var.stream_name}-${var.tags["Avst:Stage:Name"]} Alarm"
+  aws_region           = var.region
 }
-

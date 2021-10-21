@@ -103,9 +103,3 @@ variable "slack_web_hook_url" {
   description = "Web hook SSM parameter name"
   default     = ""
 }
-
-variable "slack_channel_name" {
-  type        = string
-  description = "Slack Channel name"
-  default     = ""
-}

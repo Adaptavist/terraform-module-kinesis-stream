@@ -3,10 +3,10 @@ locals {
   kinesis_period_mins                    = var.kinesis_period_mins
   kinesis_period_secs                    = 60 * local.kinesis_period_mins
   kinesis_cooldown_period                = var.kinesis_cooldown_mins
-  kinesis_scale_up_threshold             = var.kinesis_scale_up_threshold / 100           # Input parameter is in %
+  kinesis_scale_up_threshold             = var.kinesis_scale_up_threshold / 100 # Input parameter is in %
   kinesis_scale_up_evaluation_period     = var.kinesis_scale_up_evaluation_period
   kinesis_scale_up_datapoints_required   = var.kinesis_scale_up_datapoints_required
-  kinesis_scale_down_threshold           = var.kinesis_scale_down_threshold / 100         # Input parameter is in %
+  kinesis_scale_down_threshold           = var.kinesis_scale_down_threshold / 100 # Input parameter is in %
   kinesis_scale_down_evaluation_period   = var.kinesis_scale_down_evaluation_period
   kinesis_scale_down_datapoints_required = var.kinesis_scale_down_datapoints_required
   kinesis_scale_down_min_iter_age_mins   = var.kinesis_scale_down_min_iter_age_mins
@@ -64,16 +64,16 @@ resource "aws_lambda_function_event_invoke_config" "kinesis_scaling_function_asy
 }
 
 resource "aws_cloudwatch_metric_alarm" "kinesis_scaling_fatal_errors" {
-  alarm_name                = "${module.scaling_kinesis_lambda.lambda_name}-fatal-errors"
-  comparison_operator       = "GreaterThanThreshold"
-  evaluation_periods        = "1"
-  metric_name               = local.kinesis_fatal_error_metric_name
-  namespace                 = "AWS/Lambda"
-  period                    = "60"
-  statistic                 = "Average"
-  threshold                 = "0"
-  alarm_description         = "This metric monitors fatal errors in the kinesis scaling lambda"
-  insufficient_data_actions = []
+  alarm_name          = "${module.scaling_kinesis_lambda.lambda_name}-fatal-errors"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "1"
+  metric_name         = local.kinesis_fatal_error_metric_name
+  namespace           = "AWS/Lambda"
+  period              = "60"
+  statistic           = "Average"
+  threshold           = "0"
+  alarm_description   = "This metric monitors fatal errors in the kinesis scaling lambda"
+  alarm_actions       = [local.slack_notification_arn]
 
   dimensions = {
     FunctionName = local.kinesis_scaling_function_name

@@ -100,6 +100,6 @@ variable "enable_slack_notification" {
 
 variable "slack_web_hook_url" {
   type        = string
-  description = "Web hook SSM parameter name"
+  description = "Slack Web hook URL"
   default     = ""
 }

@@ -1,3 +1,11 @@
+# [1.3.0](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.2.4...v1.3.0) (2021-10-21)
+
+
+### Features
+
+* Added more Kinesis alarms and disabled the lambda consumer (not being used) ([d97141d](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/d97141dfd3d744383c9d9dc54c2cf6174bc41fe1))
+* Added more Kinesis alarms and disabled the lambda consumer (not being used) ([514671c](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/514671c08c1f3e17ec5fdc957ad36dd698e63619))
+
 ## [1.2.4](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.2.3...v1.2.4) (2021-10-20)
 
 

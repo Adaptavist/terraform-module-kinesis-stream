@@ -1,3 +1,10 @@
+## [1.4.1](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.4.0...v1.4.1) (2021-10-22)
+
+
+### Bug Fixes
+
+* Removed the lifecycle for shard count update ([5261026](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/5261026478e898f14c317dc71d443251f9516208))
+
 # [1.4.0](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.3.0...v1.4.0) (2021-10-22)
 
 

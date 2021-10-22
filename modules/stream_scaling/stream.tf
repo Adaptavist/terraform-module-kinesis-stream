@@ -13,11 +13,6 @@ resource "aws_kinesis_stream" "autoscaling_kinesis_stream" {
     "IncomingBytes", "IncomingRecords", "ReadProvisionedThroughputExceeded", "OutgoingRecords", "IteratorAgeMilliseconds", "WriteProvisionedThroughputExceeded"
   ]
 
-  lifecycle {
-    ignore_changes = [
-      shard_count, # Kinesis autoscaling will change the shard count outside of terraform
-    ]
-  }
 }
 
 resource "aws_cloudwatch_metric_alarm" "kinesis-write-throughput-exceeded" {

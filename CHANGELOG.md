@@ -1,3 +1,10 @@
+# [1.4.0](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.3.0...v1.4.0) (2021-10-22)
+
+
+### Features
+
+* Added notification alarm action for fatal error ([c277f99](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/c277f997b25a3f48cf01662eea39847074da0271))
+
 # [1.3.0](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.2.4...v1.3.0) (2021-10-21)
 
 

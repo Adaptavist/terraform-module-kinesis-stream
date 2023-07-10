@@ -1,3 +1,10 @@
+## [1.4.2](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.4.1...v1.4.2) (2023-07-10)
+
+
+### Bug Fixes
+
+* upgrade aws-alarms-slack module to support node18 ([443d374](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/443d374a0d7e399ad9ebf201179b01378205ce24))
+
 ## [1.4.1](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.4.0...v1.4.1) (2021-10-22)
 
 

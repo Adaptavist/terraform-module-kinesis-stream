@@ -20,7 +20,7 @@ locals {
 
 module "scaling_kinesis_lambda" {
   source                             = "Adaptavist/aws-lambda/module"
-  version                            = "1.11.0"
+  version                            = "1.34.0"
   name                               = local.kinesis_scaling_function_name
   namespace                          = var.tags["Avst:BusinessUnit"]
   stage                              = var.tags["Avst:Stage:Name"]

@@ -1,3 +1,11 @@
+# [1.5.0](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.4.2...v1.5.0) (2023-07-12)
+
+
+### Features
+
+* force semver release ([3b0e1ac](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/3b0e1ac283953c946ead9aef56fd583766ffcb9f))
+* upgrade lambda module ([fcd1fca](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/fcd1fca4d19ee31508eed4942b4bd676e522df44))
+
 ## [1.4.2](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.4.1...v1.4.2) (2023-07-10)
 
 

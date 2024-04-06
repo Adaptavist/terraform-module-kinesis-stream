@@ -1,1 +1,1 @@
-GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ../modules/stream_scaling/lambda/kinesis_scaling/main scale.go
+GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ../modules/stream_scaling/lambda/kinesis_scaling/bootstrap scale.go

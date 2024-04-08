@@ -1,3 +1,10 @@
+# [1.7.0](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.6.0...v1.7.0) (2024-04-08)
+
+
+### Features
+
+* updating GO runtime to provided.al2 ([cd02690](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/cd02690ba4eb0737630eeabf4944b4a55bc5a54c))
+
 # [1.6.0](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.5.0...v1.6.0) (2024-04-08)
 
 

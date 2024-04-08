@@ -1,3 +1,10 @@
+# [1.6.0](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.5.0...v1.6.0) (2024-04-08)
+
+
+### Features
+
+* upgrade GO runtime to 'provided.al2023' ([ccfe542](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/ccfe542c9c8dc6451850a0ee774a5fb555e56140))
+
 # [1.5.0](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.4.2...v1.5.0) (2023-07-12)
 
 

@@ -26,8 +26,8 @@ module "scaling_kinesis_lambda" {
   stage                              = var.tags["Avst:Stage:Name"]
   tags                               = var.tags
   lambda_code_dir                    = "${path.module}/lambda/kinesis_scaling"
-  handler                            = "main"
-  runtime                            = "go1.x"
+  handler                            = "bootstrap"
+  runtime                            = "provided.al2023"
   timeout                            = 900
   memory_size                        = 512
   description                        = "Lambda function to scale up or down kinesis shards based on the load"

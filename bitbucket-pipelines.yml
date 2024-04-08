@@ -24,20 +24,20 @@ definitions:
     - &kinesis-scaling export LAMBDA=golang;MAINPATH=../modules/stream_scaling/lambda/kinesis_scaling
       # go build
     - &lambda-build >
-      cd ${LAMBDA}/ && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ${MAINPATH}/main scale.go &&
+      cd ${LAMBDA}/ && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ${MAINPATH}/bootstrap scale.go &&
       git config pull.ff only &&
       git pull &&
-      git add ${MAINPATH}/main &&
-      git diff --quiet && git diff --staged --quiet || git commit -m "[skip ci] Added the updated main file" &&
+      git add ${MAINPATH}/bootstrap &&
+      git diff --quiet && git diff --staged --quiet || git commit -m "[skip ci] Added the updated bootstrap file" &&
       git push
 
 pipelines:
   default:
     - step: { name: 'Checkov analysis', script: [ *checkov ], image: *checkov-image, services: [ docker ] }
-    - step: { name: 'kinesis-scaling build lambda',         image: *go-lang, script: [ *kinesis-scaling, *lambda-build ], artifacts: ['/modules/stream_scaling/lambda/kinesis_scaling/main'] }
+    - step: { name: 'kinesis-scaling build lambda',         image: *go-lang, script: [ *kinesis-scaling, *lambda-build ], artifacts: ['/modules/stream_scaling/lambda/kinesis_scaling/bootstrap'] }
 
 
   branches:
     main:
-      - step: { name: 'kinesis-scaling build lambda',         image: *go-lang, script: [ *kinesis-scaling, *lambda-build ], artifacts: ['/modules/stream_scaling/lambda/kinesis_scaling/main'] }
+      - step: { name: 'kinesis-scaling build lambda',         image: *go-lang, script: [ *kinesis-scaling, *lambda-build ], artifacts: ['/modules/stream_scaling/lambda/kinesis_scaling/bootstrap'] }
       - step: *release

@@ -2,7 +2,7 @@
 
 module "avst_notify_slack" {
   source  = "Adaptavist/aws-alarms-slack/module"
-  version = "2.2.4"
+  version = "2.2.10"
 
   count = var.enable_slack_notification ? 1 : 0
 

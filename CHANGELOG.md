@@ -1,3 +1,13 @@
+## [1.7.1](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.7.0...v1.7.1) (2025-01-24)
+
+
+### Bug Fixes
+
+* change slack alarms version ([576e152](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/576e152811526519c73ae026a5c817a6531ebd64))
+* change slack alarms version ([8540a48](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/8540a4884b1d5cb90728d73d6a7eab29ed4f688b))
+* update alarm version ([6e14f76](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/6e14f7632f603c276393da8115bbdd6278727586))
+* update alarm version ([46f8357](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/46f83572bcf323abe651e849e1981bbf5a1b0fcc))
+
 # [1.7.0](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.6.0...v1.7.0) (2024-04-08)
 
 

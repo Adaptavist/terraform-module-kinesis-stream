@@ -1,3 +1,10 @@
+## [1.7.4](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.7.3...v1.7.4) (2025-02-04)
+
+
+### Bug Fixes
+
+* update lambda ([50ea755](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/50ea7551ccaaf1172167916337df6458a8310d12))
+
 ## [1.7.3](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.7.2...v1.7.3) (2025-02-03)
 
 

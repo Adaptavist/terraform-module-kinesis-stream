@@ -1,3 +1,10 @@
+## [1.7.5](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.7.4...v1.7.5) (2025-03-11)
+
+
+### Bug Fixes
+
+* add lifecycle.ignore_changes for shard count ([53f620c](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/53f620c80ed9d71ed13cbb4f8ef81b3c223ebbc3))
+
 ## [1.7.4](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.7.3...v1.7.4) (2025-02-04)
 
 

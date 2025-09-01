@@ -30,6 +30,22 @@ A lightweight system to automatically scale Kinesis Data Streams up and down bas
 8. Emits a custom CloudWatch error metric if scaling fails, you can alarm off this for added peace of mind.
 9. Can optionally adjust reserved concurrency for your Lambda consumers as it scales their streams up and down. 
 
+# Important Note
+Changes to the Kinesis stream shard count, as well as the scale up and scale down CloudWatch alarms are ignored by Terraform.
+This is to allow the lambda to fully manage the shard count of the Kinesis stream which is also referenced in the alarms.
+
+Only the initial values upon first applying the module will be used to configure the scaling alarms and kinesis stream.
+
+In order to set new values for kinesis scaling (e.g. `min_shard_count`, `kinesis_scale_up_threshold`, `kinesis_scale_down_datapoints_required`, etc.), the scale up and scale down alarms must be tainted or deleted:
+```
+module.kinesis_scaling.aws_cloudwatch_metric_alarm.kinesis_scale_up
+module.kinesis_scaling.aws_cloudwatch_metric_alarm.kinesis_scale_down
+```
+If `shard_count` needs to be be updated manually through TF, the above alarms and also the kinesis stream itself must be tainted or deleted:
+```
+module.kinesis_scaling.aws_kinesis_stream.autoscaling_kinesis_stream
+```
+
 ## Variables
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
@@ -68,8 +84,3 @@ Simply edit the `scale.go` file as needed and run `./build` to generate a main f
 
 # Reference code available at AWS-SAMPLE GIT HUB
 (https://github.com/aws-samples/kinesis-auto-scaling/tree/main/terraform)
-
-# Additional Info
-
-ignore_changes  for shard count has been removed as it has caused the inconsistency with cloud watch metric 
-if the shard count is being updated outside terraform. 

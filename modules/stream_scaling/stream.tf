@@ -211,7 +211,14 @@ resource "aws_cloudwatch_metric_alarm" "kinesis_scale_up" {
 
   lifecycle {
     ignore_changes = [
-      tags["LastScaledTimestamp"] # A tag that is updated every time Kinesis autoscales the stream
+      tags["LastScaledTimestamp"], # A tag that is updated every time Kinesis autoscales the stream
+      metric_query,
+      evaluation_periods,
+      datapoints_to_alarm,
+      threshold
+      # Ignoring all changes related to kinesis scaling to allow lambda to properly manage shard count and other parameters in this alarm.
+      # If changes to metric_query are not ignored, shard count will be updated to the value set in the TF module every time it is applied.
+      # Other alarm parameters such as threshold should also be ignored to prevent the alarm from being partially updated by TF.
     ]
   }
 
@@ -328,7 +335,14 @@ resource "aws_cloudwatch_metric_alarm" "kinesis_scale_down" {
 
   lifecycle {
     ignore_changes = [
-      tags["LastScaledTimestamp"] # A tag that is updated every time Kinesis autoscales the stream
+      tags["LastScaledTimestamp"], # A tag that is updated every time Kinesis autoscales the stream
+      metric_query,
+      evaluation_periods,
+      datapoints_to_alarm,
+      threshold
+      # Ignoring all changes related to kinesis scaling to allow lambda to properly manage shard count and other parameters in this alarm.
+      # If changes to metric_query are not ignored, shard count will be updated to the value set in the TF module every time it is applied.
+      # Other alarm parameters such as threshold should also be ignored to prevent the alarm from being partially updated by TF.
     ]
   }
 

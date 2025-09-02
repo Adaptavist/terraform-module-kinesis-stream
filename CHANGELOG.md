@@ -1,3 +1,10 @@
+## [1.7.6](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.7.5...v1.7.6) (2025-09-02)
+
+
+### Bug Fixes
+
+* adding ignore_changes to scaling alarms ([d2b666c](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/d2b666c97b61fbec396ad5a5f62c659553cc235b))
+
 ## [1.7.5](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.7.4...v1.7.5) (2025-03-11)
 
 

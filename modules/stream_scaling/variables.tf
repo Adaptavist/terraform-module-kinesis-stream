@@ -39,6 +39,11 @@ variable "min_shard_count" {
   description = "Minimum Number of Shards"
 }
 
+variable "max_shard_scaling_factor" {
+  type        = number
+  description = "Maximum factor by which minimum number of shards can scale. For example, given min_shard_count=2 and max_shard_scaling_factor=5, the max shard count will be 10"
+}
+
 variable "stream_retention_period" {
   type        = number
   description = "Stream Retention Period"

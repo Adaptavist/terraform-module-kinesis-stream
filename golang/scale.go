@@ -86,6 +86,7 @@ func handleRequest(_ context.Context, snsEvent events.SNSEvent) {
 	var datapointsRequiredScaleUp, datapointsRequiredScaleDown int64
 	var upThreshold, downThreshold float64
 	var scaleDownMinIterAgeMins, scaleDownMinCount int64
+	var scaleUpMaxFactor, scaleUpMaxCount int64
 	var additionalAlarmActions string
 
 	var dryRun = true
@@ -157,6 +158,19 @@ func handleRequest(_ context.Context, snsEvent events.SNSEvent) {
 		logger.WithError(err).Error(logMessage)
 		errorHandler(err, logMessage, "", false)
 	}
+
+	scaleUpMaxFactor, err = strconv.ParseInt(os.Getenv("SCALE_UP_MAX_FACTOR"), 10, 64)
+	if err != nil {
+		// Scale up maximum shard count will default to 5 times the minimum.
+		scaleUpMaxFactor = 5
+		logMessage := "Error reading the SCALE_UP_MAX_FACTOR environment variable. Stream max scaling factor will default to 5."
+		logger.WithError(err).Error(logMessage)
+		errorHandler(err, logMessage, "", false)
+	}
+
+	// Set max shard count to scale up factor * minimum shard count 
+	scaleUpMaxCount = scaleUpMaxFactor * scaleDownMinCount
+
 	upThreshold, err = strconv.ParseFloat(os.Getenv("SCALE_UP_THRESHOLD"), 64)
 	if err != nil {
 		// Default scale-up threshold.
@@ -305,7 +319,7 @@ func handleRequest(_ context.Context, snsEvent events.SNSEvent) {
 		return
 	}
 	currentShardCount = *((*streamSummary.StreamDescriptionSummary).OpenShardCount)
-	newShardCount, downThreshold = calculateNewShardCount(currentAlarmAction, downThreshold, currentShardCount,scaleDownMinCount)
+	newShardCount, downThreshold = calculateNewShardCount(currentAlarmAction, downThreshold, currentShardCount, scaleDownMinCount, scaleUpMaxCount)
 	logger = logger.WithField("CurrentShardCount", currentShardCount).WithField("TargetShardCount", newShardCount)
 	if dryRun {
 		logger.Info("This is dry run. Will not scale the stream.")
@@ -626,14 +640,19 @@ func setAlarmState(alarmName string, state string, reason string) (*cloudwatch.S
 // scaleAction: The scaling action. Possible values are Up and Down
 // downThreshold: The current scaling down threshold. This will be set to -1.0 if the new shard count turns out to be 1
 // currentShardCount: The current open shards in the Kinesis stream
-func calculateNewShardCount(scaleAction string, downThreshold float64, currentShardCount int64,minimumShardCount int64) (int64, float64) {
+func calculateNewShardCount(scaleAction string, downThreshold float64, currentShardCount int64, minimumShardCount int64, maximumShardCount int64) (int64, float64) {
 	var targetShardCount int64
 	if scaleAction == "Up" {
-		targetShardCount = currentShardCount * 2
+		if currentShardCount > maximumShardCount/2 {
+			targetShardCount = maximumShardCount
+		} else {
+			targetShardCount = currentShardCount * 2
+		}
 	}
 
 	if scaleAction == "Down" {
-		targetShardCount = currentShardCount / 2
+		// Integer division - scale down to half of current shard count.
+		targetShardCount = (currentShardCount + 1) / 2
 		// Set to minimum shard count
 		if targetShardCount <= minimumShardCount {
 			targetShardCount = minimumShardCount

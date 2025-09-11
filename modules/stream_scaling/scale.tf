@@ -48,6 +48,7 @@ module "scaling_kinesis_lambda" {
     SCALE_DOWN_DATAPOINTS_REQUIRED = local.kinesis_scale_down_datapoints_required
     SCALE_DOWN_MIN_ITER_AGE_MINS   = local.kinesis_scale_down_min_iter_age_mins
     SCALE_DOWN_MIN_COUNT           = var.min_shard_count
+    SCALE_UP_MAX_FACTOR            = var.max_shard_scaling_factor
     ADDITIONAL_ALARM_ACTIONS       = "" # Placeholder for Future use, if additional actions (like slack notifications) needed
     PROCESSING_LAMBDA_ARN          = local.kinesis_consumer_lambda_arn
     PROCESSING_LAMBDAS_PER_SHARD   = local.kinesis_consumer_lambdas_per_shard

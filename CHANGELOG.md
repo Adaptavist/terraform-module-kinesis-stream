@@ -1,3 +1,10 @@
+## [1.7.7](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.7.6...v1.7.7) (2025-09-18)
+
+
+### Bug Fixes
+
+* add max_shard_scaling_factor to limit kinesis scaling ([4c60f49](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/4c60f4927b57e7fb497b8a5603606612fa66306b))
+
 ## [1.7.6](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.7.5...v1.7.6) (2025-09-02)
 
 

@@ -5,7 +5,7 @@ module "avst_notify_slack" {
 
   count = var.enable_slack_notification ? 1 : 0
 
-  function_name        = "${var.stream_name}-alarm-${var.tags["Avst:BusinessUnit"]}-${var.tags["Avst:Stage:Name"]}"
+  function_name        = substr("${var.stream_name}-alarm-${var.tags["Avst:BusinessUnit"]}-${var.tags["Avst:Stage:Name"]}", 0, 64)
   description          = "Lambda for cloudwatch alarms from Kinesis"
   namespace            = var.tags["Avst:BusinessUnit"]
   name                 = "aws-alarms-slack"

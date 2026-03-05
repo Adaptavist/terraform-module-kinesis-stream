@@ -1,3 +1,10 @@
+## [1.7.8](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.7.7...v1.7.8) (2026-03-05)
+
+
+### Bug Fixes
+
+* limit alarm lambda function name to 64 chars to prevent name length issues ([d79b23b](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/d79b23bb248d0ba84333f1be536372d27c10bb0f))
+
 ## [1.7.7](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.7.6...v1.7.7) (2025-09-18)
 
 

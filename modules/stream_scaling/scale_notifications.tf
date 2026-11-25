@@ -1,7 +1,8 @@
 
 
 module "avst_notify_slack" {
-  source = "git::https://github.com/Adaptavist/terraform-module-aws-alarms-slack.git?ref=2e073210ebbfd350b014b641dedd30a41413fa8d" # <- version 2.2.13
+  source  = "api.env0.com/7d93e902-0a96-4925-853c-5b221f4e4b1b/alarms-slack/aws"
+  version = "2.3.10"
 
   count = var.enable_slack_notification ? 1 : 0
 

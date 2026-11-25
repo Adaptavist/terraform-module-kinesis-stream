@@ -1,3 +1,10 @@
+# [1.8.0](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.7.8...v1.8.0) (2026-11-25)
+
+
+### Features
+
+* use env0 alarms-slack 2.3.10 so the alarm lambda runs nodejs24.x (SR-2276) ([0cbc426](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/commits/0cbc426686dcc5f9928290ec6a0de8c4a254e626))
+
 ## [1.7.8](http://bitbucket.org/adaptavistlabs/module-kinesis-stream/compare/v1.7.7...v1.7.8) (2026-03-05)
 
 
